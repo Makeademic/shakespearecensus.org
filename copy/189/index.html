@@ -1,0 +1,2338 @@
+<html><head>
+        
+
+<meta charset="utf-8">
+
+<link rel="shortcut icon" type="image/ico" href="../../static/census/images/favicon.3c532e7612ef.png">
+
+<!-- Remote CSS -->
+
+<link href="../../css/index.html" rel="stylesheet">
+<link href="../../css/index.html" rel="stylesheet">
+<link rel="stylesheet prefetch" href="../../ajax/libs/semantic-ui/2.1.8/components/icon.min.css">
+<link rel="stylesheet" href="../../releases/v5.0.8/css/solid.css" integrity="sha384-v2Tw72dyUXeU3y4aM2Y0tBJQkGfplr39mxZqlTBDUZAb9BGoC40+rdFCG0m10lXk" crossorigin="anonymous">
+<link rel="stylesheet" href="../../releases/v5.0.8/css/fontawesome.css" integrity="sha384-q3jl8XQu1OpdLgGFvNRnPdj5VIlCvgsDQTQB6owSOHWlAurxul7f+JpUOVdAiJ5P" crossorigin="anonymous">
+
+<!-- Remote JS -->
+
+<!-- <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.12.4/jquery.min.js"></script> -->
+<!-- <script src="https://code.jquery.com/jquery-1.10.2.js"></script> -->
+<!-- <script src="https://code.jquery.com/ui/1.11.4/jquery-ui.js"></script> -->
+<script src="../../ajax/libs/jquery/3.2.1/jquery.min.js"></script>
+<link rel="stylesheet" href="../../ajax/libs/jqueryui/1.12.1/themes/smoothness/jquery-ui.css">
+<script src="../../ajax/libs/jqueryui/1.12.1/jquery-ui.min.js"></script>
+
+<!-- Local CSS -->
+
+<link rel="stylesheet" type="text/css" href="../../static/census/style.f625957d67b9.css">
+
+<!-- Local JS -->
+
+<script src="../../static/census/js/utils.cdf1ea897b68.js"></script>
+
+<title>Shakespeare Census</title>
+
+<!-- Matomo -->
+<script type="text/javascript">
+  var _paq = window._paq || [];
+  /* tracker methods like "setCustomDimension" should be called before "trackPageView" */
+  _paq.push(['trackPageView']);
+  _paq.push(['enableLinkTracking']);
+  (function() {
+    var u="//upenndigitalscholarship.org/piwik/";
+    _paq.push(['setTrackerUrl', u+'matomo.php']);
+    _paq.push(['setSiteId', '61']);
+    var d=document, g=d.createElement('script'), s=d.getElementsByTagName('script')[0];
+    g.type='text/javascript'; g.async=true; g.defer=true; g.src=u+'matomo.js'; s.parentNode.insertBefore(g,s);
+  })();
+</script>
+<!-- End Matomo Code -->
+
+
+    </head>
+    <body>
+        <div class="frame-container">
+            <div class="outer-frame">
+                <header>
+                    
+
+<div class="tucked">
+    
+
+    <a class="button" href="../../login/index.html">Sign in</a>
+    
+    <!-- A normally-styled non-breaking space always appears here
+        to ensure consistent div height. Someday we will find the
+        correct way to do this. -->
+        &nbsp;
+</div>
+<table class="title">
+    <tbody><tr>
+        <th>
+            &nbsp;
+        </th>
+        <th>
+            &nbsp;
+        </th>
+        <th>
+            &nbsp;
+        </th>
+        <th>
+            &nbsp;
+        </th>
+   </tr>
+    <tr>
+        <td colspan="4">
+          
+            <a href="../../homepage/index.html">Shakespeare Census</a><br>
+          
+        </td>
+    </tr>
+</tbody></table>
+
+<table class="header-title-nav">
+   <tbody><tr>
+     <th>
+       <a href="../../about/index.html">about</a>
+     </th>
+     <th>
+       <a href="#search/index.html" id="site-search-button">search</a>
+     </th>
+   </tr>
+</tbody></table>
+
+<div class="search-bar">
+  <form id="search-bar-form" class="hidden" action="../../search/index.html" method="get">
+    <select id="search-bar-form-field" name="field">
+      <option disabled="" selected="" value="">Search by...</option>
+      <option value="keyword">Keyword</option>
+      <option value="location">Location</option>
+      <option value="provenance_name">Provenance Name</option>
+      <option value="collection">Specific Features</option>
+      <option value="year">Year</option>
+      <option value="stc">STC / Wing #</option>
+      <option value="bartlett">Bartlett #</option>
+      <option value="nsc">SC #</option>
+    </select>
+    <input id="search-bar-form-text" type="text" name="value" placeholder="Search..">
+    <input id="search-bar-form-submit" type="submit" value="Submit">
+  </form>
+</div>
+
+<script>
+    utils.get.id('site-search-button').addEventListener('click', function () {
+        utils.togglehide.id('search-bar-form');
+    });
+    $(function() {
+        var autofillMap = {
+            location: 'https://shakespearecensus.org/autofill/location/',
+            provenance_name: 'https://shakespearecensus.org/autofill/provenance/',
+            collection: 'https://shakespearecensus.org/autofill/collection/'
+        };
+
+        var autofillResponse = function(field, query, response) {
+            fetch(autofillMap[field] + query)
+                .then((matches) => {
+                    return matches.json()
+                })
+                .then((matches_json) => {
+                    return response(matches_json.matches);
+                });
+        };
+
+        $('#search-bar-form-text').autocomplete({
+            minLength: 3,
+            source: function(request, response) {
+                var field_el = utils.get.id('search-bar-form-field');
+                var field = field_el.options[field_el.selectedIndex].value;
+                if (autofillMap.hasOwnProperty(field)) {
+                    autofillResponse(field, request.term, response);
+                }
+            },
+
+            // This is a simple way to automatically submit the form when
+            // a value is selected. But it behaves counterintuitively in 
+            // a couple of cases. I haven't been able to work out why.
+            // So for now you have to hit tab and then enter.
+            select: function(evt, ui) {
+                $('#search-bar-form-text').val(ui.item.value);
+                $('#search-bar-form').submit();
+            },
+
+            // focus: function(evt, ui) {
+            // }
+        });
+        
+        $('#search-bar-form-field').change(function(evt) {
+            if ($('#search-bar-form-field option:selected').val() === 'collection') {
+                $('#search-bar-form-text').autocomplete('search', '   ');
+            }
+        });
+    });
+
+
+    // if (window.location.hash && window.location.hash === '#search') {
+    //    utils.get.id('search-bar-form').classList.remove('hidden');
+    // }
+</script>
+
+                </header>
+
+                
+
+<div class="wrapper">
+    <div>
+        <script type="text/javascript" src="../../static/census/js/bootstrap-modal.5fe4c14f9cbb.js"></script>
+        <script type="text/javascript" src="../../static/census/js/copy_detail_edit_modal.cc1cec2e0a60.js"></script>
+        <link rel="stylesheet" type="text/css" href="../../static/census/css/modal.bdcdb5569f72.css">
+
+        <div id="copyModal" class="modal fade" role="dialog"></div>
+    </div>
+        
+    
+
+    <table class="play-title-header">
+        <tbody><tr>
+            <td rowspan="3" class="play-title-header-icon">
+                <div class="play-title-icon-border">
+                    <a href="../../editions/45/index.html">
+                        
+                            <img class="play-title-icon" src="../../media/titleicon/f3.png">
+                        
+                    </a>
+                </div>
+            </td>
+            <td class="play-title-header">
+                <a href="../../editions/45/index.html">
+                    Comedies, Histories, and Tragedies: F3
+                </a>
+            </td>
+        </tr>
+        <tr>
+            <td class="play-issue-header">
+                <span>
+                    
+                    Fragments
+                    
+                    
+                    (2°)
+                    
+                </span>
+                <span>1663/4</span>
+                <span>STC / Wing:&nbsp;[various]</span>
+
+                
+
+                     <span class="static-text">
+                        ESTC:&nbsp;<a href="http://estc.bl.uk/[various]" target="_blank">[various]</a>
+                    </span>
+                
+
+                
+                    <span class="static-text">
+                        DEEP: not in DEEP
+                    </span>
+                
+            </td>
+        </tr>
+        <tr>
+            <td class="play-issue-header">
+                
+                    
+                        <span>Extant copies: 0, plus 54 fragments</span>
+                    
+                    
+                
+            </td>
+        </tr>
+    </tbody></table>
+
+    <table class="play-detail-set">
+
+        
+        <tbody><tr>
+            <th class="terse"> SC&nbsp;# </th>
+            <th class="detailed"> Location </th>
+            <th class="even"> Shelfmark </th>
+            <th class="icon">&nbsp;</th>
+            <th class="icon">&nbsp;</th>
+            <th class="icon">&nbsp;</th>
+        </tr>
+        
+        <tr>
+            <td>
+                
+                    <a class="copy_data" href="index.html" data-form="/copydata/7871/" title="Details">
+                        7178
+                    </a>
+                
+                
+            </td>
+            <td>
+                <a class="copy_data copy_data_7178" href="index.html" data-form="/copydata/7871/" title="Details">
+                    Book Club of California
+                </a>
+            </td>
+            <td>
+                
+                    <a class="copy_data" href="index.html" data-form="/copydata/7871/" title="Details">
+                        f FW GP 234 1935
+                    </a>
+                
+            </td>
+            <td>
+                
+                      <span title="This existence of this copy at the location has been verified." class="verified-symbol">✓</span>
+                
+            </td>
+            <td>
+                
+                    <span class="unicode-icon" title="This copy is a fragment">
+                        <i class="fas fa-industry"></i>
+                    </span>
+                
+            </td>
+            <td>
+                
+            </td>
+        </tr>
+        
+        <tr>
+            <td>
+                
+                    <a class="copy_data" href="index.html" data-form="/copydata/7796/" title="Details">
+                        7179
+                    </a>
+                
+                
+            </td>
+            <td>
+                <a class="copy_data copy_data_7179" href="index.html" data-form="/copydata/7796/" title="Details">
+                    Boston University
+                </a>
+            </td>
+            <td>
+                
+                    <a class="copy_data" href="index.html" data-form="/copydata/7796/" title="Details">
+                        PR2751 .A1 1623
+                    </a>
+                
+            </td>
+            <td>
+                
+                      <span title="The existence of this copy has not been verified; location entered by an administrator." class="unverified-symbol">⃠</span>
+                
+            </td>
+            <td>
+                
+                    <span class="unicode-icon" title="This copy is a fragment">
+                        <i class="fas fa-industry"></i>
+                    </span>
+                
+            </td>
+            <td>
+                
+            </td>
+        </tr>
+        
+        <tr>
+            <td>
+                
+                    <a class="copy_data" href="index.html" data-form="/copydata/7851/" title="Details">
+                        7180
+                    </a>
+                
+                
+            </td>
+            <td>
+                <a class="copy_data copy_data_7180" href="index.html" data-form="/copydata/7851/" title="Details">
+                    Brigham Young University
+                </a>
+            </td>
+            <td>
+                
+                    <a class="copy_data" href="index.html" data-form="/copydata/7851/" title="Details">
+                        Grabhorn Press Collection Quarto - 1130 HBLL
+                    </a>
+                
+            </td>
+            <td>
+                
+                      <span title="The existence of this copy has not been verified; location entered by an administrator." class="unverified-symbol">⃠</span>
+                
+            </td>
+            <td>
+                
+                    <span class="unicode-icon" title="This copy is a fragment">
+                        <i class="fas fa-industry"></i>
+                    </span>
+                
+            </td>
+            <td>
+                
+            </td>
+        </tr>
+        
+        <tr>
+            <td>
+                
+                    <a class="copy_data" href="index.html" data-form="/copydata/7111/" title="Details">
+                        7181
+                    </a>
+                
+                
+            </td>
+            <td>
+                <a class="copy_data copy_data_7181" href="index.html" data-form="/copydata/7111/" title="Details">
+                    Cambridge University, Trinity College
+                </a>
+            </td>
+            <td>
+                
+                    <a class="copy_data" href="index.html" data-form="/copydata/7111/" title="Details">
+                        VI.12.34
+                    </a>
+                
+            </td>
+            <td>
+                
+                      <span title="This existence of this copy at the location has been verified." class="verified-symbol">✓</span>
+                
+            </td>
+            <td>
+                
+                    <span class="unicode-icon" title="This copy is a fragment">
+                        <i class="fas fa-industry"></i>
+                    </span>
+                
+            </td>
+            <td>
+                
+            </td>
+        </tr>
+        
+        <tr>
+            <td>
+                
+                    <a class="copy_data" href="index.html" data-form="/copydata/7827/" title="Details">
+                        7182
+                    </a>
+                
+                
+            </td>
+            <td>
+                <a class="copy_data copy_data_7182" href="index.html" data-form="/copydata/7827/" title="Details">
+                    Carnegie Mellon University
+                </a>
+            </td>
+            <td>
+                
+                    <a class="copy_data" href="index.html" data-form="/copydata/7827/" title="Details">
+                        Z8812 .S45M c. 1
+                    </a>
+                
+            </td>
+            <td>
+                
+                      <span title="This existence of this copy at the location has been verified." class="verified-symbol">✓</span>
+                
+            </td>
+            <td>
+                
+                    <span class="unicode-icon" title="This copy is a fragment">
+                        <i class="fas fa-industry"></i>
+                    </span>
+                
+            </td>
+            <td>
+                
+            </td>
+        </tr>
+        
+        <tr>
+            <td>
+                
+                    <a class="copy_data" href="index.html" data-form="/copydata/7830/" title="Details">
+                        7183
+                    </a>
+                
+                
+            </td>
+            <td>
+                <a class="copy_data copy_data_7183" href="index.html" data-form="/copydata/7830/" title="Details">
+                    Carnegie Mellon University
+                </a>
+            </td>
+            <td>
+                
+                    <a class="copy_data" href="index.html" data-form="/copydata/7830/" title="Details">
+                        Z8812 .S45M c. 2
+                    </a>
+                
+            </td>
+            <td>
+                
+                      <span title="This existence of this copy at the location has been verified." class="verified-symbol">✓</span>
+                
+            </td>
+            <td>
+                
+                    <span class="unicode-icon" title="This copy is a fragment">
+                        <i class="fas fa-industry"></i>
+                    </span>
+                
+            </td>
+            <td>
+                
+            </td>
+        </tr>
+        
+        <tr>
+            <td>
+                
+                    <a class="copy_data" href="index.html" data-form="/copydata/7788/" title="Details">
+                        7184
+                    </a>
+                
+                
+            </td>
+            <td>
+                <a class="copy_data copy_data_7184" href="index.html" data-form="/copydata/7788/" title="Details">
+                    Case Western Reserve
+                </a>
+            </td>
+            <td>
+                
+                    <a class="copy_data" href="index.html" data-form="/copydata/7788/" title="Details">
+                        PR2751.A1 1623
+                    </a>
+                
+            </td>
+            <td>
+                
+                      <span title="This existence of this copy at the location has been verified." class="verified-symbol">✓</span>
+                
+            </td>
+            <td>
+                
+                    <span class="unicode-icon" title="This copy is a fragment">
+                        <i class="fas fa-industry"></i>
+                    </span>
+                
+            </td>
+            <td>
+                
+            </td>
+        </tr>
+        
+        <tr>
+            <td>
+                
+                    <a class="copy_data" href="index.html" data-form="/copydata/7867/" title="Details">
+                        7185
+                    </a>
+                
+                
+            </td>
+            <td>
+                <a class="copy_data copy_data_7185" href="index.html" data-form="/copydata/7867/" title="Details">
+                    Claremont Colleges
+                </a>
+            </td>
+            <td>
+                
+                    <a class="copy_data" href="index.html" data-form="/copydata/7867/" title="Details">
+                        Z8813 .W55 1935
+                    </a>
+                
+            </td>
+            <td>
+                
+                      <span title="This existence of this copy at the location has been verified." class="verified-symbol">✓</span>
+                
+            </td>
+            <td>
+                
+                    <span class="unicode-icon" title="This copy is a fragment">
+                        <i class="fas fa-industry"></i>
+                    </span>
+                
+            </td>
+            <td>
+                
+            </td>
+        </tr>
+        
+        <tr>
+            <td>
+                
+                    <a class="copy_data" href="index.html" data-form="/copydata/7847/" title="Details">
+                        7186
+                    </a>
+                
+                
+            </td>
+            <td>
+                <a class="copy_data copy_data_7186" href="index.html" data-form="/copydata/7847/" title="Details">
+                    Dallas Public Library
+                </a>
+            </td>
+            <td>
+                
+                    <a class="copy_data" href="index.html" data-form="/copydata/7847/" title="Details">
+                        822.33 A10
+                    </a>
+                
+            </td>
+            <td>
+                
+                      <span title="The existence of this copy has not been verified; location entered by an administrator." class="unverified-symbol">⃠</span>
+                
+            </td>
+            <td>
+                
+                    <span class="unicode-icon" title="This copy is a fragment">
+                        <i class="fas fa-industry"></i>
+                    </span>
+                
+            </td>
+            <td>
+                
+            </td>
+        </tr>
+        
+        <tr>
+            <td>
+                
+                    <a class="copy_data" href="index.html" data-form="/copydata/7410/" title="Details">
+                        7187
+                    </a>
+                
+                
+            </td>
+            <td>
+                <a class="copy_data copy_data_7187" href="index.html" data-form="/copydata/7410/" title="Details">
+                    Dartmouth College
+                </a>
+            </td>
+            <td>
+                
+                    <a class="copy_data" href="index.html" data-form="/copydata/7410/" title="Details">
+                        PR2751 .A3529
+                    </a>
+                
+            </td>
+            <td>
+                
+                      <span title="This existence of this copy at the location has been verified." class="verified-symbol">✓</span>
+                
+            </td>
+            <td>
+                
+                    <span class="unicode-icon" title="This copy is a fragment">
+                        <i class="fas fa-industry"></i>
+                    </span>
+                
+            </td>
+            <td>
+                
+            </td>
+        </tr>
+        
+        <tr>
+            <td>
+                
+                    <a class="copy_data" href="index.html" data-form="/copydata/7835/" title="Details">
+                        7188
+                    </a>
+                
+                
+            </td>
+            <td>
+                <a class="copy_data copy_data_7188" href="index.html" data-form="/copydata/7835/" title="Details">
+                    Dartmouth College
+                </a>
+            </td>
+            <td>
+                
+                    <a class="copy_data" href="index.html" data-form="/copydata/7835/" title="Details">
+                        Presses G752wj
+                    </a>
+                
+            </td>
+            <td>
+                
+                      <span title="This existence of this copy at the location has been verified." class="verified-symbol">✓</span>
+                
+            </td>
+            <td>
+                
+                    <span class="unicode-icon" title="This copy is a fragment">
+                        <i class="fas fa-industry"></i>
+                    </span>
+                
+            </td>
+            <td>
+                
+            </td>
+        </tr>
+        
+        <tr>
+            <td>
+                
+                    <a class="copy_data" href="index.html" data-form="/copydata/7563/" title="Details">
+                        7189
+                    </a>
+                
+                
+            </td>
+            <td>
+                <a class="copy_data copy_data_7189" href="index.html" data-form="/copydata/7563/" title="Details">
+                    Edinburgh University
+                </a>
+            </td>
+            <td>
+                
+                    <a class="copy_data" href="index.html" data-form="/copydata/7563/" title="Details">
+                        Hb.3.20
+                    </a>
+                
+            </td>
+            <td>
+                
+                      <span title="The existence of this copy has not been verified; location derived from ESTC." class="unverified-symbol">⃠</span>
+                
+            </td>
+            <td>
+                
+                    <span class="unicode-icon" title="This copy is a fragment">
+                        <i class="fas fa-industry"></i>
+                    </span>
+                
+            </td>
+            <td>
+                
+            </td>
+        </tr>
+        
+        <tr>
+            <td>
+                
+                    <a class="copy_data" href="index.html" data-form="/copydata/7032/" title="Details">
+                        7190
+                    </a>
+                
+                
+            </td>
+            <td>
+                <a class="copy_data copy_data_7190" href="index.html" data-form="/copydata/7032/" title="Details">
+                    Edinburgh University
+                </a>
+            </td>
+            <td>
+                
+                    <a class="copy_data" href="index.html" data-form="/copydata/7032/" title="Details">
+                        JY 441
+                    </a>
+                
+            </td>
+            <td>
+                
+                      <span title="The existence of this copy has not been verified; location derived from ESTC." class="unverified-symbol">⃠</span>
+                
+            </td>
+            <td>
+                
+                    <span class="unicode-icon" title="This copy is a fragment">
+                        <i class="fas fa-industry"></i>
+                    </span>
+                
+            </td>
+            <td>
+                
+            </td>
+        </tr>
+        
+        <tr>
+            <td>
+                
+                    <a class="copy_data" href="index.html" data-form="/copydata/7541/" title="Details">
+                        7191
+                    </a>
+                
+                
+            </td>
+            <td>
+                <a class="copy_data copy_data_7191" href="index.html" data-form="/copydata/7541/" title="Details">
+                    Edinburgh University
+                </a>
+            </td>
+            <td>
+                
+                    <a class="copy_data" href="index.html" data-form="/copydata/7541/" title="Details">
+                        JY 442
+                    </a>
+                
+            </td>
+            <td>
+                
+                      <span title="The existence of this copy has not been verified; location derived from ESTC." class="unverified-symbol">⃠</span>
+                
+            </td>
+            <td>
+                
+                    <span class="unicode-icon" title="This copy is a fragment">
+                        <i class="fas fa-industry"></i>
+                    </span>
+                
+            </td>
+            <td>
+                
+            </td>
+        </tr>
+        
+        <tr>
+            <td>
+                
+                    <a class="copy_data" href="index.html" data-form="/copydata/7719/" title="Details">
+                        7192
+                    </a>
+                
+                
+            </td>
+            <td>
+                <a class="copy_data copy_data_7192" href="index.html" data-form="/copydata/7719/" title="Details">
+                    Folger Shakespeare Library
+                </a>
+            </td>
+            <td>
+                
+                    <a class="copy_data" href="index.html" data-form="/copydata/7719/" title="Details">
+                        260888
+                    </a>
+                
+            </td>
+            <td>
+                
+                      <span title="This existence of this copy at the location has been verified." class="verified-symbol">✓</span>
+                
+            </td>
+            <td>
+                
+                    <span class="unicode-icon" title="This copy is a fragment">
+                        <i class="fas fa-industry"></i>
+                    </span>
+                
+            </td>
+            <td>
+                
+            </td>
+        </tr>
+        
+        <tr>
+            <td>
+                
+                    <a class="copy_data" href="index.html" data-form="/copydata/7718/" title="Details">
+                        7193
+                    </a>
+                
+                
+            </td>
+            <td>
+                <a class="copy_data copy_data_7193" href="index.html" data-form="/copydata/7718/" title="Details">
+                    Folger Shakespeare Library
+                </a>
+            </td>
+            <td>
+                
+                    <a class="copy_data" href="index.html" data-form="/copydata/7718/" title="Details">
+                        PROMPT 3d Folio 1 Hen.IV Smock Alley
+                    </a>
+                
+            </td>
+            <td>
+                
+                      <span title="This existence of this copy at the location has been verified." class="verified-symbol">✓</span>
+                
+            </td>
+            <td>
+                
+                    <span class="unicode-icon" title="This copy is a fragment">
+                        <i class="fas fa-industry"></i>
+                    </span>
+                
+            </td>
+            <td>
+                
+            </td>
+        </tr>
+        
+        <tr>
+            <td>
+                
+                    <a class="copy_data" href="index.html" data-form="/copydata/7771/" title="Details">
+                        7194
+                    </a>
+                
+                
+            </td>
+            <td>
+                <a class="copy_data copy_data_7194" href="index.html" data-form="/copydata/7771/" title="Details">
+                    Folger Shakespeare Library
+                </a>
+            </td>
+            <td>
+                
+                    <a class="copy_data" href="index.html" data-form="/copydata/7771/" title="Details">
+                        PROMPT 3d Folio Com. Err. Smock Alley
+                    </a>
+                
+            </td>
+            <td>
+                
+                      <span title="This existence of this copy at the location has been verified." class="verified-symbol">✓</span>
+                
+            </td>
+            <td>
+                
+                    <span class="unicode-icon" title="This copy is a fragment">
+                        <i class="fas fa-industry"></i>
+                    </span>
+                
+            </td>
+            <td>
+                
+            </td>
+        </tr>
+        
+        <tr>
+            <td>
+                
+                    <a class="copy_data" href="index.html" data-form="/copydata/7770/" title="Details">
+                        7195
+                    </a>
+                
+                
+            </td>
+            <td>
+                <a class="copy_data copy_data_7195" href="index.html" data-form="/copydata/7770/" title="Details">
+                    Folger Shakespeare Library
+                </a>
+            </td>
+            <td>
+                
+                    <a class="copy_data" href="index.html" data-form="/copydata/7770/" title="Details">
+                        PROMPT 3d Folio Hen.VIII Smock Alley
+                    </a>
+                
+            </td>
+            <td>
+                
+                      <span title="This existence of this copy at the location has been verified." class="verified-symbol">✓</span>
+                
+            </td>
+            <td>
+                
+                    <span class="unicode-icon" title="This copy is a fragment">
+                        <i class="fas fa-industry"></i>
+                    </span>
+                
+            </td>
+            <td>
+                
+            </td>
+        </tr>
+        
+        <tr>
+            <td>
+                
+                    <a class="copy_data" href="index.html" data-form="/copydata/7769/" title="Details">
+                        7196
+                    </a>
+                
+                
+            </td>
+            <td>
+                <a class="copy_data copy_data_7196" href="index.html" data-form="/copydata/7769/" title="Details">
+                    Folger Shakespeare Library
+                </a>
+            </td>
+            <td>
+                
+                    <a class="copy_data" href="index.html" data-form="/copydata/7769/" title="Details">
+                        PROMPT 3d Folio Lear Smock Alley
+                    </a>
+                
+            </td>
+            <td>
+                
+                      <span title="This existence of this copy at the location has been verified." class="verified-symbol">✓</span>
+                
+            </td>
+            <td>
+                
+                    <span class="unicode-icon" title="This copy is a fragment">
+                        <i class="fas fa-industry"></i>
+                    </span>
+                
+            </td>
+            <td>
+                
+            </td>
+        </tr>
+        
+        <tr>
+            <td>
+                
+                    <a class="copy_data" href="index.html" data-form="/copydata/7767/" title="Details">
+                        7197
+                    </a>
+                
+                
+            </td>
+            <td>
+                <a class="copy_data copy_data_7197" href="index.html" data-form="/copydata/7767/" title="Details">
+                    Folger Shakespeare Library
+                </a>
+            </td>
+            <td>
+                
+                    <a class="copy_data" href="index.html" data-form="/copydata/7767/" title="Details">
+                        PROMPT 3d Folio M.W. Smock Alley
+                    </a>
+                
+            </td>
+            <td>
+                
+                      <span title="This existence of this copy at the location has been verified." class="verified-symbol">✓</span>
+                
+            </td>
+            <td>
+                
+                    <span class="unicode-icon" title="This copy is a fragment">
+                        <i class="fas fa-industry"></i>
+                    </span>
+                
+            </td>
+            <td>
+                
+            </td>
+        </tr>
+        
+        <tr>
+            <td>
+                
+                    <a class="copy_data" href="index.html" data-form="/copydata/7768/" title="Details">
+                        7198
+                    </a>
+                
+                
+            </td>
+            <td>
+                <a class="copy_data copy_data_7198" href="index.html" data-form="/copydata/7768/" title="Details">
+                    Folger Shakespeare Library
+                </a>
+            </td>
+            <td>
+                
+                    <a class="copy_data" href="index.html" data-form="/copydata/7768/" title="Details">
+                        PROMPT 3d Folio Mac. Smock Alley
+                    </a>
+                
+            </td>
+            <td>
+                
+                      <span title="This existence of this copy at the location has been verified." class="verified-symbol">✓</span>
+                
+            </td>
+            <td>
+                
+                    <span class="unicode-icon" title="This copy is a fragment">
+                        <i class="fas fa-industry"></i>
+                    </span>
+                
+            </td>
+            <td>
+                
+            </td>
+        </tr>
+        
+        <tr>
+            <td>
+                
+                    <a class="copy_data" href="index.html" data-form="/copydata/7766/" title="Details">
+                        7199
+                    </a>
+                
+                
+            </td>
+            <td>
+                <a class="copy_data copy_data_7199" href="index.html" data-form="/copydata/7766/" title="Details">
+                    Folger Shakespeare Library
+                </a>
+            </td>
+            <td>
+                
+                    <a class="copy_data" href="index.html" data-form="/copydata/7766/" title="Details">
+                        PROMPT 3d Folio Oth. Smock Alley
+                    </a>
+                
+            </td>
+            <td>
+                
+                      <span title="This existence of this copy at the location has been verified." class="verified-symbol">✓</span>
+                
+            </td>
+            <td>
+                
+                    <span class="unicode-icon" title="This copy is a fragment">
+                        <i class="fas fa-industry"></i>
+                    </span>
+                
+            </td>
+            <td>
+                
+            </td>
+        </tr>
+        
+        <tr>
+            <td>
+                
+                    <a class="copy_data" href="index.html" data-form="/copydata/7765/" title="Details">
+                        7200
+                    </a>
+                
+                
+            </td>
+            <td>
+                <a class="copy_data copy_data_7200" href="index.html" data-form="/copydata/7765/" title="Details">
+                    Folger Shakespeare Library
+                </a>
+            </td>
+            <td>
+                
+                    <a class="copy_data" href="index.html" data-form="/copydata/7765/" title="Details">
+                        PROMPT 3d Folio Per. Smock Alley
+                    </a>
+                
+            </td>
+            <td>
+                
+                      <span title="This existence of this copy at the location has been verified." class="verified-symbol">✓</span>
+                
+            </td>
+            <td>
+                
+                    <span class="unicode-icon" title="This copy is a fragment">
+                        <i class="fas fa-industry"></i>
+                    </span>
+                
+            </td>
+            <td>
+                
+            </td>
+        </tr>
+        
+        <tr>
+            <td>
+                
+                    <a class="copy_data" href="index.html" data-form="/copydata/7763/" title="Details">
+                        7201
+                    </a>
+                
+                
+            </td>
+            <td>
+                <a class="copy_data copy_data_7201" href="index.html" data-form="/copydata/7763/" title="Details">
+                    Folger Shakespeare Library
+                </a>
+            </td>
+            <td>
+                
+                    <a class="copy_data" href="index.html" data-form="/copydata/7763/" title="Details">
+                        PROMPT 3d Folio T.N. Smock Alley
+                    </a>
+                
+            </td>
+            <td>
+                
+                      <span title="This existence of this copy at the location has been verified." class="verified-symbol">✓</span>
+                
+            </td>
+            <td>
+                
+                    <span class="unicode-icon" title="This copy is a fragment">
+                        <i class="fas fa-industry"></i>
+                    </span>
+                
+            </td>
+            <td>
+                
+            </td>
+        </tr>
+        
+        <tr>
+            <td>
+                
+                    <a class="copy_data" href="index.html" data-form="/copydata/7764/" title="Details">
+                        7202
+                    </a>
+                
+                
+            </td>
+            <td>
+                <a class="copy_data copy_data_7202" href="index.html" data-form="/copydata/7764/" title="Details">
+                    Folger Shakespeare Library
+                </a>
+            </td>
+            <td>
+                
+                    <a class="copy_data" href="index.html" data-form="/copydata/7764/" title="Details">
+                        PROMPT 3d Folio Tim. Smock Alley
+                    </a>
+                
+            </td>
+            <td>
+                
+                      <span title="This existence of this copy at the location has been verified." class="verified-symbol">✓</span>
+                
+            </td>
+            <td>
+                
+                    <span class="unicode-icon" title="This copy is a fragment">
+                        <i class="fas fa-industry"></i>
+                    </span>
+                
+            </td>
+            <td>
+                
+            </td>
+        </tr>
+        
+        <tr>
+            <td>
+                
+                    <a class="copy_data" href="index.html" data-form="/copydata/7762/" title="Details">
+                        7203
+                    </a>
+                
+                
+            </td>
+            <td>
+                <a class="copy_data copy_data_7203" href="index.html" data-form="/copydata/7762/" title="Details">
+                    Folger Shakespeare Library
+                </a>
+            </td>
+            <td>
+                
+                    <a class="copy_data" href="index.html" data-form="/copydata/7762/" title="Details">
+                        PROMPT 3d Folio Wint. T. Smock Alley
+                    </a>
+                
+            </td>
+            <td>
+                
+                      <span title="This existence of this copy at the location has been verified." class="verified-symbol">✓</span>
+                
+            </td>
+            <td>
+                
+                    <span class="unicode-icon" title="This copy is a fragment">
+                        <i class="fas fa-industry"></i>
+                    </span>
+                
+            </td>
+            <td>
+                
+            </td>
+        </tr>
+        
+        <tr>
+            <td>
+                
+                    <a class="copy_data" href="index.html" data-form="/copydata/7801/" title="Details">
+                        7204
+                    </a>
+                
+                
+            </td>
+            <td>
+                <a class="copy_data copy_data_7204" href="index.html" data-form="/copydata/7801/" title="Details">
+                    Harvard University, Houghton Library
+                </a>
+            </td>
+            <td>
+                
+                    <a class="copy_data" href="index.html" data-form="/copydata/7801/" title="Details">
+                        Typ 970.35.7850
+                    </a>
+                
+            </td>
+            <td>
+                
+                      <span title="This existence of this copy at the location has been verified." class="verified-symbol">✓</span>
+                
+            </td>
+            <td>
+                
+                    <span class="unicode-icon" title="This copy is a fragment">
+                        <i class="fas fa-industry"></i>
+                    </span>
+                
+            </td>
+            <td>
+                
+            </td>
+        </tr>
+        
+        <tr>
+            <td>
+                
+                    <a class="copy_data" href="index.html" data-form="/copydata/7863/" title="Details">
+                        7205
+                    </a>
+                
+                
+            </td>
+            <td>
+                <a class="copy_data copy_data_7205" href="index.html" data-form="/copydata/7863/" title="Details">
+                    Henry E. Huntington Library and Art Gallery
+                </a>
+            </td>
+            <td>
+                
+                    <a class="copy_data" href="index.html" data-form="/copydata/7863/" title="Details">
+                        218945
+                    </a>
+                
+            </td>
+            <td>
+                
+                      <span title="This existence of this copy at the location has been verified." class="verified-symbol">✓</span>
+                
+            </td>
+            <td>
+                
+                    <span class="unicode-icon" title="This copy is a fragment">
+                        <i class="fas fa-industry"></i>
+                    </span>
+                
+            </td>
+            <td>
+                
+            </td>
+        </tr>
+        
+        <tr>
+            <td>
+                
+                    <a class="copy_data" href="index.html" data-form="/copydata/7875/" title="Details">
+                        7206
+                    </a>
+                
+                
+            </td>
+            <td>
+                <a class="copy_data copy_data_7206" href="index.html" data-form="/copydata/7875/" title="Details">
+                    Mills College, F. W. Olin Library
+                </a>
+            </td>
+            <td>
+                
+                    <a class="copy_data" href="index.html" data-form="/copydata/7875/" title="Details">
+                        P Grabhorn
+                    </a>
+                
+            </td>
+            <td>
+                
+                      <span title="The existence of this copy has not been verified; location entered by an administrator." class="unverified-symbol">⃠</span>
+                
+            </td>
+            <td>
+                
+                    <span class="unicode-icon" title="This copy is a fragment">
+                        <i class="fas fa-industry"></i>
+                    </span>
+                
+            </td>
+            <td>
+                
+            </td>
+        </tr>
+        
+        <tr>
+            <td>
+                
+                    <a class="copy_data" href="index.html" data-form="/copydata/7823/" title="Details">
+                        7207
+                    </a>
+                
+                
+            </td>
+            <td>
+                <a class="copy_data copy_data_7207" href="index.html" data-form="/copydata/7823/" title="Details">
+                    Noble and Greenough School (MA)
+                </a>
+            </td>
+            <td>
+                
+                    <a class="copy_data" href="index.html" data-form="/copydata/7823/" title="Details">
+                        GRA Ori
+                    </a>
+                
+            </td>
+            <td>
+                
+                      <span title="The existence of this copy has not been verified; location entered by an administrator." class="unverified-symbol">⃠</span>
+                
+            </td>
+            <td>
+                
+                    <span class="unicode-icon" title="This copy is a fragment">
+                        <i class="fas fa-industry"></i>
+                    </span>
+                
+            </td>
+            <td>
+                
+            </td>
+        </tr>
+        
+        <tr>
+            <td>
+                
+                    <a class="copy_data" href="index.html" data-form="/copydata/8375/" title="Details">
+                        7207.5
+                    </a>
+                
+                
+            </td>
+            <td>
+                <a class="copy_data copy_data_7207.5" href="index.html" data-form="/copydata/8375/" title="Details">
+                    Phoenix Public Library
+                </a>
+            </td>
+            <td>
+                
+                    <a class="copy_data" href="index.html" data-form="/copydata/8375/" title="Details">
+                        822.33 LSh15m 1632
+                    </a>
+                
+            </td>
+            <td>
+                
+                      <span title="This existence of this copy at the location has been verified." class="verified-symbol">✓</span>
+                
+            </td>
+            <td>
+                
+                    <span class="unicode-icon" title="This copy is a fragment">
+                        <i class="fas fa-industry"></i>
+                    </span>
+                
+            </td>
+            <td>
+                
+            </td>
+        </tr>
+        
+        <tr>
+            <td>
+                
+                    <a class="copy_data" href="index.html" data-form="/copydata/7816/" title="Details">
+                        7208
+                    </a>
+                
+                
+            </td>
+            <td>
+                <a class="copy_data copy_data_7208" href="index.html" data-form="/copydata/7816/" title="Details">
+                    Princeton University
+                </a>
+            </td>
+            <td>
+                
+                    <a class="copy_data" href="index.html" data-form="/copydata/7816/" title="Details">
+                        Oversize 2006-0688Q
+                    </a>
+                
+            </td>
+            <td>
+                
+                      <span title="The existence of this copy has not been verified; location entered by an administrator." class="unverified-symbol">⃠</span>
+                
+            </td>
+            <td>
+                
+                    <span class="unicode-icon" title="This copy is a fragment">
+                        <i class="fas fa-industry"></i>
+                    </span>
+                
+            </td>
+            <td>
+                
+            </td>
+        </tr>
+        
+        <tr>
+            <td>
+                
+                    <a class="copy_data" href="index.html" data-form="/copydata/7793/" title="Details">
+                        7209
+                    </a>
+                
+                
+            </td>
+            <td>
+                <a class="copy_data copy_data_7209" href="index.html" data-form="/copydata/7793/" title="Details">
+                    Rochester Institute of Technology
+                </a>
+            </td>
+            <td>
+                
+                    <a class="copy_data" href="index.html" data-form="/copydata/7793/" title="Details">
+                        107306
+                    </a>
+                
+            </td>
+            <td>
+                
+                      <span title="The existence of this copy has not been verified; location entered by an administrator." class="unverified-symbol">⃠</span>
+                
+            </td>
+            <td>
+                
+                    <span class="unicode-icon" title="This copy is a fragment">
+                        <i class="fas fa-industry"></i>
+                    </span>
+                
+            </td>
+            <td>
+                
+            </td>
+        </tr>
+        
+        <tr>
+            <td>
+                
+                    <a class="copy_data" href="index.html" data-form="/copydata/7879/" title="Details">
+                        7210
+                    </a>
+                
+                
+            </td>
+            <td>
+                <a class="copy_data copy_data_7210" href="index.html" data-form="/copydata/7879/" title="Details">
+                    San Francisco Public Library
+                </a>
+            </td>
+            <td>
+                
+                    <a class="copy_data" href="index.html" data-form="/copydata/7879/" title="Details">
+                        GRABHORN TYP COLL  copy 1
+                    </a>
+                
+            </td>
+            <td>
+                
+                      <span title="This existence of this copy at the location has been verified." class="verified-symbol">✓</span>
+                
+            </td>
+            <td>
+                
+                    <span class="unicode-icon" title="This copy is a fragment">
+                        <i class="fas fa-industry"></i>
+                    </span>
+                
+            </td>
+            <td>
+                
+            </td>
+        </tr>
+        
+        <tr>
+            <td>
+                
+                    <a class="copy_data" href="index.html" data-form="/copydata/7883/" title="Details">
+                        7211
+                    </a>
+                
+                
+            </td>
+            <td>
+                <a class="copy_data copy_data_7211" href="index.html" data-form="/copydata/7883/" title="Details">
+                    San Francisco Public Library
+                </a>
+            </td>
+            <td>
+                
+                    <a class="copy_data" href="index.html" data-form="/copydata/7883/" title="Details">
+                        GRABHORN TYP COLL  copy 2
+                    </a>
+                
+            </td>
+            <td>
+                
+                      <span title="This existence of this copy at the location has been verified." class="verified-symbol">✓</span>
+                
+            </td>
+            <td>
+                
+                    <span class="unicode-icon" title="This copy is a fragment">
+                        <i class="fas fa-industry"></i>
+                    </span>
+                
+            </td>
+            <td>
+                
+            </td>
+        </tr>
+        
+        <tr>
+            <td>
+                
+                    <a class="copy_data" href="index.html" data-form="/copydata/7401/" title="Details">
+                        7212
+                    </a>
+                
+                
+            </td>
+            <td>
+                <a class="copy_data copy_data_7212" href="index.html" data-form="/copydata/7401/" title="Details">
+                    Shakespeare Birthplace Trust
+                </a>
+            </td>
+            <td>
+                
+                    <a class="copy_data" href="index.html" data-form="/copydata/7401/" title="Details">
+                        SR/OS/37 (1664) Accession #: 83008217
+                    </a>
+                
+            </td>
+            <td>
+                
+                      <span title="The existence of this copy has not been verified; location derived from ESTC." class="unverified-symbol">⃠</span>
+                
+            </td>
+            <td>
+                
+                    <span class="unicode-icon" title="This copy is a fragment">
+                        <i class="fas fa-industry"></i>
+                    </span>
+                
+            </td>
+            <td>
+                
+            </td>
+        </tr>
+        
+        <tr>
+            <td>
+                
+                    <a class="copy_data" href="index.html" data-form="/copydata/7839/" title="Details">
+                        7213
+                    </a>
+                
+                
+            </td>
+            <td>
+                <a class="copy_data copy_data_7213" href="index.html" data-form="/copydata/7839/" title="Details">
+                    St. Louis Public Library
+                </a>
+            </td>
+            <td>
+                
+                    <a class="copy_data" href="index.html" data-form="/copydata/7839/" title="Details">
+                        RB-X Oversize 822.33 G
+                    </a>
+                
+            </td>
+            <td>
+                
+                      <span title="The existence of this copy has not been verified; location entered by an administrator." class="unverified-symbol">⃠</span>
+                
+            </td>
+            <td>
+                
+                    <span class="unicode-icon" title="This copy is a fragment">
+                        <i class="fas fa-industry"></i>
+                    </span>
+                
+            </td>
+            <td>
+                
+            </td>
+        </tr>
+        
+        <tr>
+            <td>
+                
+                    <a class="copy_data" href="index.html" data-form="/copydata/7806/" title="Details">
+                        7214
+                    </a>
+                
+                
+            </td>
+            <td>
+                <a class="copy_data copy_data_7214" href="index.html" data-form="/copydata/7806/" title="Details">
+                    Stanford University
+                </a>
+            </td>
+            <td>
+                
+                    <a class="copy_data" href="index.html" data-form="/copydata/7806/" title="Details">
+                        Z239 .G72 W73 F CB
+                    </a>
+                
+            </td>
+            <td>
+                
+                      <span title="The existence of this copy has not been verified; location entered by an administrator." class="unverified-symbol">⃠</span>
+                
+            </td>
+            <td>
+                
+                    <span class="unicode-icon" title="This copy is a fragment">
+                        <i class="fas fa-industry"></i>
+                    </span>
+                
+            </td>
+            <td>
+                
+            </td>
+        </tr>
+        
+        <tr>
+            <td>
+                
+                    <a class="copy_data" href="index.html" data-form="/copydata/7899/" title="Details">
+                        7215
+                    </a>
+                
+                
+            </td>
+            <td>
+                <a class="copy_data copy_data_7215" href="index.html" data-form="/copydata/7899/" title="Details">
+                    Trinity College, Dublin
+                </a>
+            </td>
+            <td>
+                
+                    <a class="copy_data" href="index.html" data-form="/copydata/7899/" title="Details">
+                        Bender D.1.3
+                    </a>
+                
+            </td>
+            <td>
+                
+                      <span title="This existence of this copy at the location has been verified." class="verified-symbol">✓</span>
+                
+            </td>
+            <td>
+                
+                    <span class="unicode-icon" title="This copy is a fragment">
+                        <i class="fas fa-industry"></i>
+                    </span>
+                
+            </td>
+            <td>
+                
+            </td>
+        </tr>
+        
+        <tr>
+            <td>
+                
+                    <a class="copy_data" href="index.html" data-form="/copydata/7860/" title="Details">
+                        7216
+                    </a>
+                
+                
+            </td>
+            <td>
+                <a class="copy_data copy_data_7216" href="index.html" data-form="/copydata/7860/" title="Details">
+                    University of Alberta
+                </a>
+            </td>
+            <td>
+                
+                    <a class="copy_data" href="index.html" data-form="/copydata/7860/" title="Details">
+                        Z 239 G7 A1 v.234 folio
+                    </a>
+                
+            </td>
+            <td>
+                
+                      <span title="The existence of this copy has not been verified; location entered by an administrator." class="unverified-symbol">⃠</span>
+                
+            </td>
+            <td>
+                
+                    <span class="unicode-icon" title="This copy is a fragment">
+                        <i class="fas fa-industry"></i>
+                    </span>
+                
+            </td>
+            <td>
+                
+            </td>
+        </tr>
+        
+        <tr>
+            <td>
+                
+                    <a class="copy_data" href="index.html" data-form="/copydata/7887/" title="Details">
+                        7217
+                    </a>
+                
+                
+            </td>
+            <td>
+                <a class="copy_data copy_data_7217" href="index.html" data-form="/copydata/7887/" title="Details">
+                    University of California, Berkeley, Bancroft Library
+                </a>
+            </td>
+            <td>
+                
+                    <a class="copy_data" href="index.html" data-form="/copydata/7887/" title="Details">
+                        f TYP.Z239.2.G71.1935s
+                    </a>
+                
+            </td>
+            <td>
+                
+                      <span title="The existence of this copy has not been verified; location entered by an administrator." class="unverified-symbol">⃠</span>
+                
+            </td>
+            <td>
+                
+                    <span class="unicode-icon" title="This copy is a fragment">
+                        <i class="fas fa-industry"></i>
+                    </span>
+                
+            </td>
+            <td>
+                
+            </td>
+        </tr>
+        
+        <tr>
+            <td>
+                
+                    <a class="copy_data" href="index.html" data-form="/copydata/7891/" title="Details">
+                        7218
+                    </a>
+                
+                
+            </td>
+            <td>
+                <a class="copy_data copy_data_7218" href="index.html" data-form="/copydata/7891/" title="Details">
+                    University of California, Berkeley, Bancroft Library
+                </a>
+            </td>
+            <td>
+                
+                    <a class="copy_data" href="index.html" data-form="/copydata/7891/" title="Details">
+                        f TYP.Z239.2.G71.1935s copy 2
+                    </a>
+                
+            </td>
+            <td>
+                
+                      <span title="The existence of this copy has not been verified; location entered by an administrator." class="unverified-symbol">⃠</span>
+                
+            </td>
+            <td>
+                
+                    <span class="unicode-icon" title="This copy is a fragment">
+                        <i class="fas fa-industry"></i>
+                    </span>
+                
+            </td>
+            <td>
+                
+            </td>
+        </tr>
+        
+        <tr>
+            <td>
+                
+                    <a class="copy_data" href="index.html" data-form="/copydata/7895/" title="Details">
+                        7219
+                    </a>
+                
+                
+            </td>
+            <td>
+                <a class="copy_data copy_data_7219" href="index.html" data-form="/copydata/7895/" title="Details">
+                    University of California, Berkeley, Bancroft Library
+                </a>
+            </td>
+            <td>
+                
+                    <a class="copy_data" href="index.html" data-form="/copydata/7895/" title="Details">
+                        f TYP.Z239.2.G71.1935s copy 3
+                    </a>
+                
+            </td>
+            <td>
+                
+                      <span title="The existence of this copy has not been verified; location entered by an administrator." class="unverified-symbol">⃠</span>
+                
+            </td>
+            <td>
+                
+                    <span class="unicode-icon" title="This copy is a fragment">
+                        <i class="fas fa-industry"></i>
+                    </span>
+                
+            </td>
+            <td>
+                
+            </td>
+        </tr>
+        
+        <tr>
+            <td>
+                
+                    <a class="copy_data" href="index.html" data-form="/copydata/7808/" title="Details">
+                        7220
+                    </a>
+                
+                
+            </td>
+            <td>
+                <a class="copy_data copy_data_7220" href="index.html" data-form="/copydata/7808/" title="Details">
+                    University of California, Los Angeles
+                </a>
+            </td>
+            <td>
+                
+                    <a class="copy_data" href="index.html" data-form="/copydata/7808/" title="Details">
+                        * Z239.2 .S52o
+                    </a>
+                
+            </td>
+            <td>
+                
+                      <span title="The existence of this copy has not been verified; location entered by an administrator." class="unverified-symbol">⃠</span>
+                
+            </td>
+            <td>
+                
+                    <span class="unicode-icon" title="This copy is a fragment">
+                        <i class="fas fa-industry"></i>
+                    </span>
+                
+            </td>
+            <td>
+                
+            </td>
+        </tr>
+        
+        <tr>
+            <td>
+                
+                    <a class="copy_data" href="index.html" data-form="/copydata/7399/" title="Details">
+                        7221
+                    </a>
+                
+                
+            </td>
+            <td>
+                <a class="copy_data copy_data_7221" href="index.html" data-form="/copydata/7399/" title="Details">
+                    University of California, Los Angeles, Clark Library
+                </a>
+            </td>
+            <td>
+                
+                    <a class="copy_data" href="index.html" data-form="/copydata/7399/" title="Details">
+                        Chrzanowski 1663s
+                    </a>
+                
+            </td>
+            <td>
+                
+                      <span title="This existence of this copy at the location has been verified." class="verified-symbol">✓</span>
+                
+            </td>
+            <td>
+                
+                    <span class="unicode-icon" title="This copy is a fragment">
+                        <i class="fas fa-industry"></i>
+                    </span>
+                
+            </td>
+            <td>
+                
+            </td>
+        </tr>
+        
+        <tr>
+            <td>
+                
+                    <a class="copy_data" href="index.html" data-form="/copydata/7843/" title="Details">
+                        7222
+                    </a>
+                
+                
+            </td>
+            <td>
+                <a class="copy_data copy_data_7222" href="index.html" data-form="/copydata/7843/" title="Details">
+                    University of Iowa
+                </a>
+            </td>
+            <td>
+                
+                    <a class="copy_data" href="index.html" data-form="/copydata/7843/" title="Details">
+                        FOLIO Z8813 .W5
+                    </a>
+                
+            </td>
+            <td>
+                
+                      <span title="This existence of this copy at the location has been verified." class="verified-symbol">✓</span>
+                
+            </td>
+            <td>
+                
+                    <span class="unicode-icon" title="This copy is a fragment">
+                        <i class="fas fa-industry"></i>
+                    </span>
+                
+            </td>
+            <td>
+                
+            </td>
+        </tr>
+        
+        <tr>
+            <td>
+                
+                    <a class="copy_data" href="index.html" data-form="/copydata/7063/" title="Details">
+                        7223
+                    </a>
+                
+                
+            </td>
+            <td>
+                <a class="copy_data copy_data_7223" href="index.html" data-form="/copydata/7063/" title="Details">
+                    University of Liverpool
+                </a>
+            </td>
+            <td>
+                
+                    <a class="copy_data" href="index.html" data-form="/copydata/7063/" title="Details">
+                        SPEC H88.1
+                    </a>
+                
+            </td>
+            <td>
+                
+                      <span title="This existence of this copy at the location has been verified." class="verified-symbol">✓</span>
+                
+            </td>
+            <td>
+                
+                    <span class="unicode-icon" title="This copy is a fragment">
+                        <i class="fas fa-industry"></i>
+                    </span>
+                
+            </td>
+            <td>
+                
+            </td>
+        </tr>
+        
+        <tr>
+            <td>
+                
+                    <a class="copy_data" href="index.html" data-form="/copydata/7403/" title="Details">
+                        7224
+                    </a>
+                
+                
+            </td>
+            <td>
+                <a class="copy_data copy_data_7224" href="index.html" data-form="/copydata/7403/" title="Details">
+                    University of Nevada, Reno
+                </a>
+            </td>
+            <td>
+                
+                    <a class="copy_data" href="index.html" data-form="/copydata/7403/" title="Details">
+                        PR2751 .A3525 1664
+                    </a>
+                
+            </td>
+            <td>
+                
+                      <span title="The existence of this copy has not been verified; location entered by an administrator." class="unverified-symbol">⃠</span>
+                
+            </td>
+            <td>
+                
+                    <span class="unicode-icon" title="This copy is a fragment">
+                        <i class="fas fa-industry"></i>
+                    </span>
+                
+            </td>
+            <td>
+                
+            </td>
+        </tr>
+        
+        <tr>
+            <td>
+                
+                    <a class="copy_data" href="index.html" data-form="/copydata/7406/" title="Details">
+                        7225
+                    </a>
+                
+                
+            </td>
+            <td>
+                <a class="copy_data copy_data_7225" href="index.html" data-form="/copydata/7406/" title="Details">
+                    University of Notre Dame, Hesburgh Library
+                </a>
+            </td>
+            <td>
+                
+                    <a class="copy_data" href="index.html" data-form="/copydata/7406/" title="Details">
+                        XLarge PR 2751 .A3 1664
+                    </a>
+                
+            </td>
+            <td>
+                
+                      <span title="The existence of this copy has not been verified; location entered by an administrator." class="unverified-symbol">⃠</span>
+                
+            </td>
+            <td>
+                
+                    <span class="unicode-icon" title="This copy is a fragment">
+                        <i class="fas fa-industry"></i>
+                    </span>
+                
+            </td>
+            <td>
+                
+            </td>
+        </tr>
+        
+        <tr>
+            <td>
+                
+                    <a class="copy_data" href="index.html" data-form="/copydata/7405/" title="Details">
+                        7226
+                    </a>
+                
+                
+            </td>
+            <td>
+                <a class="copy_data copy_data_7226" href="index.html" data-form="/copydata/7405/" title="Details">
+                    University of Pennsylvania, Kislak Center
+                </a>
+            </td>
+            <td>
+                
+                    <a class="copy_data" href="index.html" data-form="/copydata/7405/" title="Details">
+                        PR2751.A3501 1664
+                    </a>
+                
+            </td>
+            <td>
+                
+                      <span title="This existence of this copy at the location has been verified." class="verified-symbol">✓</span>
+                
+            </td>
+            <td>
+                
+                    <span class="unicode-icon" title="This copy is a fragment">
+                        <i class="fas fa-industry"></i>
+                    </span>
+                
+            </td>
+            <td>
+                
+            </td>
+        </tr>
+        
+        <tr>
+            <td>
+                
+                    <a class="copy_data" href="index.html" data-form="/copydata/8395/" title="Details">
+                        7226.5
+                    </a>
+                
+                
+            </td>
+            <td>
+                <a class="copy_data copy_data_7226.5" href="index.html" data-form="/copydata/8395/" title="Details">
+                    University of Pennsylvania, Kislak Center
+                </a>
+            </td>
+            <td>
+                
+                    <a class="copy_data" href="index.html" data-form="/copydata/8395/" title="Details">
+                        [none]
+                    </a>
+                
+            </td>
+            <td>
+                
+                      <span title="This existence of this copy at the location has been verified." class="verified-symbol">✓</span>
+                
+            </td>
+            <td>
+                
+                    <span class="unicode-icon" title="This copy is a fragment">
+                        <i class="fas fa-industry"></i>
+                    </span>
+                
+            </td>
+            <td>
+                
+            </td>
+        </tr>
+        
+        <tr>
+            <td>
+                
+                    <a class="copy_data" href="index.html" data-form="/copydata/7854/" title="Details">
+                        7227
+                    </a>
+                
+                
+            </td>
+            <td>
+                <a class="copy_data copy_data_7227" href="index.html" data-form="/copydata/7854/" title="Details">
+                    University of Utah
+                </a>
+            </td>
+            <td>
+                
+                    <a class="copy_data" href="index.html" data-form="/copydata/7854/" title="Details">
+                        PR2751.A16 O7 1935
+                    </a>
+                
+            </td>
+            <td>
+                
+                      <span title="This existence of this copy at the location has been verified." class="verified-symbol">✓</span>
+                
+            </td>
+            <td>
+                
+                    <span class="unicode-icon" title="This copy is a fragment">
+                        <i class="fas fa-industry"></i>
+                    </span>
+                
+            </td>
+            <td>
+                
+            </td>
+        </tr>
+        
+        <tr>
+            <td>
+                
+                    <a class="copy_data" href="index.html" data-form="/copydata/7400/" title="Details">
+                        7228
+                    </a>
+                
+                
+            </td>
+            <td>
+                <a class="copy_data copy_data_7228" href="index.html" data-form="/copydata/7400/" title="Details">
+                    University of Virginia
+                </a>
+            </td>
+            <td>
+                
+                    <a class="copy_data" href="index.html" data-form="/copydata/7400/" title="Details">
+                        PR2751 .A3 1663
+                    </a>
+                
+            </td>
+            <td>
+                
+                      <span title="The existence of this copy has not been verified; location derived from ESTC." class="unverified-symbol">⃠</span>
+                
+            </td>
+            <td>
+                
+                    <span class="unicode-icon" title="This copy is a fragment">
+                        <i class="fas fa-industry"></i>
+                    </span>
+                
+            </td>
+            <td>
+                
+            </td>
+        </tr>
+        
+        <tr>
+            <td>
+                
+                    <a class="copy_data" href="index.html" data-form="/copydata/7819/" title="Details">
+                        7229
+                    </a>
+                
+                
+            </td>
+            <td>
+                <a class="copy_data copy_data_7229" href="index.html" data-form="/copydata/7819/" title="Details">
+                    Wellesley College
+                </a>
+            </td>
+            <td>
+                
+                    <a class="copy_data" href="index.html" data-form="/copydata/7819/" title="Details">
+                        f Grabhorn 234
+                    </a>
+                
+            </td>
+            <td>
+                
+                      <span title="The existence of this copy has not been verified; location entered by an administrator." class="unverified-symbol">⃠</span>
+                
+            </td>
+            <td>
+                
+                    <span class="unicode-icon" title="This copy is a fragment">
+                        <i class="fas fa-industry"></i>
+                    </span>
+                
+            </td>
+            <td>
+                
+            </td>
+        </tr>
+        
+        
+    </tbody></table>
+</div>
+
+
+
+                <div class="footer">
+                    
+<table class="footer-nav">
+   <tbody><tr>
+     <th>
+       <span><a href="../../about/advisoryboard/index.html">advisory board</a></span>
+       <span><a href="../../about/references/index.html">references</a></span>
+       <span><a href="../../contact/index.html">contact</a></span>
+     </th>
+   </tr>
+</tbody></table>
+
+                </div>
+            </div>
+        </div>
+    
+
+
+</body></html>

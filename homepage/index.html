@@ -1,0 +1,1130 @@
+<html><head>
+        
+
+<meta charset="utf-8">
+
+<link rel="shortcut icon" type="image/ico" href="../static/census/images/favicon.3c532e7612ef.png">
+
+<!-- Remote CSS -->
+
+<link href="../css/index.html" rel="stylesheet">
+<link href="../css/index.html" rel="stylesheet">
+<link rel="stylesheet prefetch" href="../ajax/libs/semantic-ui/2.1.8/components/icon.min.css">
+<link rel="stylesheet" href="../releases/v5.0.8/css/solid.css" integrity="sha384-v2Tw72dyUXeU3y4aM2Y0tBJQkGfplr39mxZqlTBDUZAb9BGoC40+rdFCG0m10lXk" crossorigin="anonymous">
+<link rel="stylesheet" href="../releases/v5.0.8/css/fontawesome.css" integrity="sha384-q3jl8XQu1OpdLgGFvNRnPdj5VIlCvgsDQTQB6owSOHWlAurxul7f+JpUOVdAiJ5P" crossorigin="anonymous">
+
+<!-- Remote JS -->
+
+<!-- <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.12.4/jquery.min.js"></script> -->
+<!-- <script src="https://code.jquery.com/jquery-1.10.2.js"></script> -->
+<!-- <script src="https://code.jquery.com/ui/1.11.4/jquery-ui.js"></script> -->
+<script src="../ajax/libs/jquery/3.2.1/jquery.min.js"></script>
+<link rel="stylesheet" href="../ajax/libs/jqueryui/1.12.1/themes/smoothness/jquery-ui.css">
+<script src="../ajax/libs/jqueryui/1.12.1/jquery-ui.min.js"></script>
+
+<!-- Local CSS -->
+
+<link rel="stylesheet" type="text/css" href="../static/census/style.f625957d67b9.css">
+
+<!-- Local JS -->
+
+<script src="../static/census/js/utils.cdf1ea897b68.js"></script>
+
+<title>Shakespeare Census</title>
+
+<!-- Matomo -->
+<script type="text/javascript">
+  var _paq = window._paq || [];
+  /* tracker methods like "setCustomDimension" should be called before "trackPageView" */
+  _paq.push(['trackPageView']);
+  _paq.push(['enableLinkTracking']);
+  (function() {
+    var u="//upenndigitalscholarship.org/piwik/";
+    _paq.push(['setTrackerUrl', u+'matomo.php']);
+    _paq.push(['setSiteId', '61']);
+    var d=document, g=d.createElement('script'), s=d.getElementsByTagName('script')[0];
+    g.type='text/javascript'; g.async=true; g.defer=true; g.src=u+'matomo.js'; s.parentNode.insertBefore(g,s);
+  })();
+</script>
+<!-- End Matomo Code -->
+
+
+    </head>
+    <body>
+        <div class="frame-container">
+            <div class="outer-frame">
+                <header>
+                    
+
+<div class="tucked">
+    
+
+    <a class="button" href="../login/index.html">Sign in</a>
+    
+    <!-- A normally-styled non-breaking space always appears here
+        to ensure consistent div height. Someday we will find the
+        correct way to do this. -->
+        &nbsp;
+</div>
+<table class="title">
+    <tbody><tr>
+        <th>
+            &nbsp;
+        </th>
+        <th>
+            &nbsp;
+        </th>
+        <th>
+            &nbsp;
+        </th>
+        <th>
+            &nbsp;
+        </th>
+   </tr>
+    <tr>
+        <td colspan="4">
+          
+            <a>Shakespeare Census</a>
+          
+        </td>
+    </tr>
+</tbody></table>
+
+<table class="header-title-nav">
+   <tbody><tr>
+     <th>
+       <a href="../about/index.html">about</a>
+     </th>
+     <th>
+       <a href="../homepage#search/index.html" id="site-search-button">search</a>
+     </th>
+   </tr>
+</tbody></table>
+
+<div class="search-bar">
+  <form id="search-bar-form" class="hidden" action="../search/index.html" method="get">
+    <select id="search-bar-form-field" name="field">
+      <option disabled="" selected="" value="">Search by...</option>
+      <option value="keyword">Keyword</option>
+      <option value="location">Location</option>
+      <option value="provenance_name">Provenance Name</option>
+      <option value="collection">Specific Features</option>
+      <option value="year">Year</option>
+      <option value="stc">STC / Wing #</option>
+      <option value="bartlett">Bartlett #</option>
+      <option value="nsc">SC #</option>
+    </select>
+    <input id="search-bar-form-text" type="text" name="value" placeholder="Search..">
+    <input id="search-bar-form-submit" type="submit" value="Submit">
+  </form>
+</div>
+
+<script>
+    utils.get.id('site-search-button').addEventListener('click', function () {
+        utils.togglehide.id('search-bar-form');
+    });
+    $(function() {
+        var autofillMap = {
+            location: 'https://shakespearecensus.org/autofill/location/',
+            provenance_name: 'https://shakespearecensus.org/autofill/provenance/',
+            collection: 'https://shakespearecensus.org/autofill/collection/'
+        };
+
+        var autofillResponse = function(field, query, response) {
+            fetch(autofillMap[field] + query)
+                .then((matches) => {
+                    return matches.json()
+                })
+                .then((matches_json) => {
+                    return response(matches_json.matches);
+                });
+        };
+
+        $('#search-bar-form-text').autocomplete({
+            minLength: 3,
+            source: function(request, response) {
+                var field_el = utils.get.id('search-bar-form-field');
+                var field = field_el.options[field_el.selectedIndex].value;
+                if (autofillMap.hasOwnProperty(field)) {
+                    autofillResponse(field, request.term, response);
+                }
+            },
+
+            // This is a simple way to automatically submit the form when
+            // a value is selected. But it behaves counterintuitively in 
+            // a couple of cases. I haven't been able to work out why.
+            // So for now you have to hit tab and then enter.
+            select: function(evt, ui) {
+                $('#search-bar-form-text').val(ui.item.value);
+                $('#search-bar-form').submit();
+            },
+
+            // focus: function(evt, ui) {
+            // }
+        });
+        
+        $('#search-bar-form-field').change(function(evt) {
+            if ($('#search-bar-form-field option:selected').val() === 'collection') {
+                $('#search-bar-form-text').autocomplete('search', '   ');
+            }
+        });
+    });
+
+
+    // if (window.location.hash && window.location.hash === '#search') {
+    //    utils.get.id('search-bar-form').classList.remove('hidden');
+    // }
+</script>
+
+                </header>
+
+                
+
+<table class="play-title-icon">
+    
+    <tbody><tr class="play-title-icon">
+        
+        <td class="play-title-icon">
+            <div class="play-title-icon">
+                <div class="play-title-icon-border">
+                    <a href="../editions/7/index.html">
+                        
+                            <img class="play-title-icon" src="../media/titleicon/birth-of-merlin.png">
+                        
+                    </a>
+		</div>
+            </div>
+        </td>
+        
+        <td class="play-title-icon">
+            <div class="play-title-icon">
+                <div class="play-title-icon-border">
+                    <a href="../editions/43/index.html">
+                        
+                            <img class="play-title-icon" src="../media/titleicon/F1.png">
+                        
+                    </a>
+		</div>
+            </div>
+        </td>
+        
+        <td class="play-title-icon">
+            <div class="play-title-icon">
+                <div class="play-title-icon-border">
+                    <a href="../editions/44/index.html">
+                        
+                            <img class="play-title-icon" src="../media/titleicon/f2.png">
+                        
+                    </a>
+		</div>
+            </div>
+        </td>
+        
+        <td class="play-title-icon">
+            <div class="play-title-icon">
+                <div class="play-title-icon-border">
+                    <a href="../editions/45/index.html">
+                        
+                            <img class="play-title-icon" src="../media/titleicon/f3.png">
+                        
+                    </a>
+		</div>
+            </div>
+        </td>
+        
+        <td class="play-title-icon">
+            <div class="play-title-icon">
+                <div class="play-title-icon-border">
+                    <a href="../editions/46/index.html">
+                        
+                            <img class="play-title-icon" src="../media/titleicon/f4.png">
+                        
+                    </a>
+		</div>
+            </div>
+        </td>
+        
+    </tr>
+    <tr class="play-title">
+        
+        <td class="play-title">
+            <div class="play-title">
+                <a class="linkbutton" href="../editions/7/index.html">
+                    The Birth of Merlin
+                </a>
+            </div>
+        </td>
+        
+        <td class="play-title">
+            <div class="play-title">
+                <a class="linkbutton" href="../editions/43/index.html">
+                    Comedies, Histories, and Tragedies: F1
+                </a>
+            </div>
+        </td>
+        
+        <td class="play-title">
+            <div class="play-title">
+                <a class="linkbutton" href="../editions/44/index.html">
+                    Comedies, Histories, and Tragedies: F2
+                </a>
+            </div>
+        </td>
+        
+        <td class="play-title">
+            <div class="play-title">
+                <a class="linkbutton" href="../editions/45/index.html">
+                    Comedies, Histories, and Tragedies: F3
+                </a>
+            </div>
+        </td>
+        
+        <td class="play-title">
+            <div class="play-title">
+                <a class="linkbutton" href="../editions/46/index.html">
+                    Comedies, Histories, and Tragedies: F4
+                </a>
+            </div>
+        </td>
+        
+    </tr>
+    
+    <tr class="play-title-icon">
+        
+        <td class="play-title-icon">
+            <div class="play-title-icon">
+                <div class="play-title-icon-border">
+                    <a href="../editions/8/index.html">
+                        
+                            <img class="play-title-icon" src="../media/titleicon/cupids-cabinet-unlocked.png">
+                        
+                    </a>
+		</div>
+            </div>
+        </td>
+        
+        <td class="play-title-icon">
+            <div class="play-title-icon">
+                <div class="play-title-icon-border">
+                    <a href="../editions/9/index.html">
+                        
+                            <img class="play-title-icon" src="../media/titleicon/hamlet.png">
+                        
+                    </a>
+		</div>
+            </div>
+        </td>
+        
+        <td class="play-title-icon">
+            <div class="play-title-icon">
+                <div class="play-title-icon-border">
+                    <a href="../editions/1/index.html">
+                        
+                            <img class="play-title-icon" src="../media/titleicon/1-henry-iv.png">
+                        
+                    </a>
+		</div>
+            </div>
+        </td>
+        
+        <td class="play-title-icon">
+            <div class="play-title-icon">
+                <div class="play-title-icon-border">
+                    <a href="../editions/4/index.html">
+                        
+                            <img class="play-title-icon" src="../media/titleicon/2-henry-iv.png">
+                        
+                    </a>
+		</div>
+            </div>
+        </td>
+        
+        <td class="play-title-icon">
+            <div class="play-title-icon">
+                <div class="play-title-icon-border">
+                    <a href="../editions/10/index.html">
+                        
+                            <img class="play-title-icon" src="../media/titleicon/henry-v.png">
+                        
+                    </a>
+		</div>
+            </div>
+        </td>
+        
+    </tr>
+    <tr class="play-title">
+        
+        <td class="play-title">
+            <div class="play-title">
+                <a class="linkbutton" href="../editions/8/index.html">
+                    Cupid's Cabinet Unlocked
+                </a>
+            </div>
+        </td>
+        
+        <td class="play-title">
+            <div class="play-title">
+                <a class="linkbutton" href="../editions/9/index.html">
+                    Hamlet
+                </a>
+            </div>
+        </td>
+        
+        <td class="play-title">
+            <div class="play-title">
+                <a class="linkbutton" href="../editions/1/index.html">
+                    1 Henry IV
+                </a>
+            </div>
+        </td>
+        
+        <td class="play-title">
+            <div class="play-title">
+                <a class="linkbutton" href="../editions/4/index.html">
+                    2 Henry IV
+                </a>
+            </div>
+        </td>
+        
+        <td class="play-title">
+            <div class="play-title">
+                <a class="linkbutton" href="../editions/10/index.html">
+                    Henry V
+                </a>
+            </div>
+        </td>
+        
+    </tr>
+    
+    <tr class="play-title-icon">
+        
+        <td class="play-title-icon">
+            <div class="play-title-icon">
+                <div class="play-title-icon-border">
+                    <a href="../editions/5/index.html">
+                        
+                            <img class="play-title-icon" src="../media/titleicon/2-henry-vi.png">
+                        
+                    </a>
+		</div>
+            </div>
+        </td>
+        
+        <td class="play-title-icon">
+            <div class="play-title-icon">
+                <div class="play-title-icon-border">
+                    <a href="../editions/6/index.html">
+                        
+                            <img class="play-title-icon" src="../media/titleicon/3-henry-vi.png">
+                        
+                    </a>
+		</div>
+            </div>
+        </td>
+        
+        <td class="play-title-icon">
+            <div class="play-title-icon">
+                <div class="play-title-icon-border">
+                    <a href="../editions/11/index.html">
+                        
+                            <img class="play-title-icon" src="../media/titleicon/julius-caesar.png">
+                        
+                    </a>
+		</div>
+            </div>
+        </td>
+        
+        <td class="play-title-icon">
+            <div class="play-title-icon">
+                <div class="play-title-icon-border">
+                    <a href="../editions/12/index.html">
+                        
+                            <img class="play-title-icon" src="../media/titleicon/king-lear.png">
+                        
+                    </a>
+		</div>
+            </div>
+        </td>
+        
+        <td class="play-title-icon">
+            <div class="play-title-icon">
+                <div class="play-title-icon-border">
+                    <a href="../editions/13/index.html">
+                        
+                            <img class="play-title-icon" src="../media/titleicon/locrine.png">
+                        
+                    </a>
+		</div>
+            </div>
+        </td>
+        
+    </tr>
+    <tr class="play-title">
+        
+        <td class="play-title">
+            <div class="play-title">
+                <a class="linkbutton" href="../editions/5/index.html">
+                    2 Henry VI
+                </a>
+            </div>
+        </td>
+        
+        <td class="play-title">
+            <div class="play-title">
+                <a class="linkbutton" href="../editions/6/index.html">
+                    3 Henry VI
+                </a>
+            </div>
+        </td>
+        
+        <td class="play-title">
+            <div class="play-title">
+                <a class="linkbutton" href="../editions/11/index.html">
+                    Julius Caesar
+                </a>
+            </div>
+        </td>
+        
+        <td class="play-title">
+            <div class="play-title">
+                <a class="linkbutton" href="../editions/12/index.html">
+                    King Lear
+                </a>
+            </div>
+        </td>
+        
+        <td class="play-title">
+            <div class="play-title">
+                <a class="linkbutton" href="../editions/13/index.html">
+                    Locrine
+                </a>
+            </div>
+        </td>
+        
+    </tr>
+    
+    <tr class="play-title-icon">
+        
+        <td class="play-title-icon">
+            <div class="play-title-icon">
+                <div class="play-title-icon-border">
+                    <a href="../editions/14/index.html">
+                        
+                            <img class="play-title-icon" src="../media/titleicon/london-prodigal.png">
+                        
+                    </a>
+		</div>
+            </div>
+        </td>
+        
+        <td class="play-title-icon">
+            <div class="play-title-icon">
+                <div class="play-title-icon-border">
+                    <a href="../editions/15/index.html">
+                        
+                            <img class="play-title-icon" src="../media/titleicon/loves-labors-lost.png">
+                        
+                    </a>
+		</div>
+            </div>
+        </td>
+        
+        <td class="play-title-icon">
+            <div class="play-title-icon">
+                <div class="play-title-icon-border">
+                    <a href="../editions/16/index.html">
+                        
+                            <img class="play-title-icon" src="../media/titleicon/loves-martyr.png">
+                        
+                    </a>
+		</div>
+            </div>
+        </td>
+        
+        <td class="play-title-icon">
+            <div class="play-title-icon">
+                <div class="play-title-icon-border">
+                    <a href="../editions/17/index.html">
+                        
+                            <img class="play-title-icon" src="../media/titleicon/macbeth.png">
+                        
+                    </a>
+		</div>
+            </div>
+        </td>
+        
+        <td class="play-title-icon">
+            <div class="play-title-icon">
+                <div class="play-title-icon-border">
+                    <a href="../editions/18/index.html">
+                        
+                            <img class="play-title-icon" src="../media/titleicon/merchant-of-venice.png">
+                        
+                    </a>
+		</div>
+            </div>
+        </td>
+        
+    </tr>
+    <tr class="play-title">
+        
+        <td class="play-title">
+            <div class="play-title">
+                <a class="linkbutton" href="../editions/14/index.html">
+                    The London Prodigal
+                </a>
+            </div>
+        </td>
+        
+        <td class="play-title">
+            <div class="play-title">
+                <a class="linkbutton" href="../editions/15/index.html">
+                    Love's Labors Lost
+                </a>
+            </div>
+        </td>
+        
+        <td class="play-title">
+            <div class="play-title">
+                <a class="linkbutton" href="../editions/16/index.html">
+                    Love's Martyr
+                </a>
+            </div>
+        </td>
+        
+        <td class="play-title">
+            <div class="play-title">
+                <a class="linkbutton" href="../editions/17/index.html">
+                    Macbeth
+                </a>
+            </div>
+        </td>
+        
+        <td class="play-title">
+            <div class="play-title">
+                <a class="linkbutton" href="../editions/18/index.html">
+                    The Merchant of Venice
+                </a>
+            </div>
+        </td>
+        
+    </tr>
+    
+    <tr class="play-title-icon">
+        
+        <td class="play-title-icon">
+            <div class="play-title-icon">
+                <div class="play-title-icon-border">
+                    <a href="../editions/19/index.html">
+                        
+                            <img class="play-title-icon" src="../media/titleicon/merry-wives-of-windsor.png">
+                        
+                    </a>
+		</div>
+            </div>
+        </td>
+        
+        <td class="play-title-icon">
+            <div class="play-title-icon">
+                <div class="play-title-icon-border">
+                    <a href="../editions/20/index.html">
+                        
+                            <img class="play-title-icon" src="../media/titleicon/midsummer-nights-dream.png">
+                        
+                    </a>
+		</div>
+            </div>
+        </td>
+        
+        <td class="play-title-icon">
+            <div class="play-title-icon">
+                <div class="play-title-icon-border">
+                    <a href="../editions/21/index.html">
+                        
+                            <img class="play-title-icon" src="../media/titleicon/much-ado-about-nothing.png">
+                        
+                    </a>
+		</div>
+            </div>
+        </td>
+        
+        <td class="play-title-icon">
+            <div class="play-title-icon">
+                <div class="play-title-icon-border">
+                    <a href="../editions/22/index.html">
+                        
+                            <img class="play-title-icon" src="../media/titleicon/othello.png">
+                        
+                    </a>
+		</div>
+            </div>
+        </td>
+        
+        <td class="play-title-icon">
+            <div class="play-title-icon">
+                <div class="play-title-icon-border">
+                    <a href="../editions/23/index.html">
+                        
+                            <img class="play-title-icon" src="../media/titleicon/passionate-pilgrim.png">
+                        
+                    </a>
+		</div>
+            </div>
+        </td>
+        
+    </tr>
+    <tr class="play-title">
+        
+        <td class="play-title">
+            <div class="play-title">
+                <a class="linkbutton" href="../editions/19/index.html">
+                    The Merry Wives of Windsor
+                </a>
+            </div>
+        </td>
+        
+        <td class="play-title">
+            <div class="play-title">
+                <a class="linkbutton" href="../editions/20/index.html">
+                    A Midsummer Night's Dream
+                </a>
+            </div>
+        </td>
+        
+        <td class="play-title">
+            <div class="play-title">
+                <a class="linkbutton" href="../editions/21/index.html">
+                    Much Ado About Nothing
+                </a>
+            </div>
+        </td>
+        
+        <td class="play-title">
+            <div class="play-title">
+                <a class="linkbutton" href="../editions/22/index.html">
+                    Othello
+                </a>
+            </div>
+        </td>
+        
+        <td class="play-title">
+            <div class="play-title">
+                <a class="linkbutton" href="../editions/23/index.html">
+                    The Passionate Pilgrim
+                </a>
+            </div>
+        </td>
+        
+    </tr>
+    
+    <tr class="play-title-icon">
+        
+        <td class="play-title-icon">
+            <div class="play-title-icon">
+                <div class="play-title-icon-border">
+                    <a href="../editions/24/index.html">
+                        
+                            <img class="play-title-icon" src="../media/titleicon/pericles.png">
+                        
+                    </a>
+		</div>
+            </div>
+        </td>
+        
+        <td class="play-title-icon">
+            <div class="play-title-icon">
+                <div class="play-title-icon-border">
+                    <a href="../editions/25/index.html">
+                        
+                            <img class="play-title-icon" src="../media/titleicon/poems.png">
+                        
+                    </a>
+		</div>
+            </div>
+        </td>
+        
+        <td class="play-title-icon">
+            <div class="play-title-icon">
+                <div class="play-title-icon-border">
+                    <a href="../editions/33/index.html">
+                        
+                            <img class="play-title-icon" src="../media/titleicon/puritan-or-the-widow-of-watling-street.png">
+                        
+                    </a>
+		</div>
+            </div>
+        </td>
+        
+        <td class="play-title-icon">
+            <div class="play-title-icon">
+                <div class="play-title-icon-border">
+                    <a href="../editions/26/index.html">
+                        
+                            <img class="play-title-icon" src="../media/titleicon/rape-of-lucrece.png">
+                        
+                    </a>
+		</div>
+            </div>
+        </td>
+        
+        <td class="play-title-icon">
+            <div class="play-title-icon">
+                <div class="play-title-icon-border">
+                    <a href="../editions/28/index.html">
+                        
+                            <img class="play-title-icon" src="../media/titleicon/richard-ii.png">
+                        
+                    </a>
+		</div>
+            </div>
+        </td>
+        
+    </tr>
+    <tr class="play-title">
+        
+        <td class="play-title">
+            <div class="play-title">
+                <a class="linkbutton" href="../editions/24/index.html">
+                    Pericles
+                </a>
+            </div>
+        </td>
+        
+        <td class="play-title">
+            <div class="play-title">
+                <a class="linkbutton" href="../editions/25/index.html">
+                    Poems
+                </a>
+            </div>
+        </td>
+        
+        <td class="play-title">
+            <div class="play-title">
+                <a class="linkbutton" href="../editions/33/index.html">
+                    The Puritan, or The Widow of Watling Street
+                </a>
+            </div>
+        </td>
+        
+        <td class="play-title">
+            <div class="play-title">
+                <a class="linkbutton" href="../editions/26/index.html">
+                    The Rape of Lucrece
+                </a>
+            </div>
+        </td>
+        
+        <td class="play-title">
+            <div class="play-title">
+                <a class="linkbutton" href="../editions/28/index.html">
+                    Richard II
+                </a>
+            </div>
+        </td>
+        
+    </tr>
+    
+    <tr class="play-title-icon">
+        
+        <td class="play-title-icon">
+            <div class="play-title-icon">
+                <div class="play-title-icon-border">
+                    <a href="../editions/29/index.html">
+                        
+                            <img class="play-title-icon" src="../media/titleicon/richard-iii.png">
+                        
+                    </a>
+		</div>
+            </div>
+        </td>
+        
+        <td class="play-title-icon">
+            <div class="play-title-icon">
+                <div class="play-title-icon-border">
+                    <a href="../editions/30/index.html">
+                        
+                            <img class="play-title-icon" src="../media/titleicon/romeo-and-juliet.png">
+                        
+                    </a>
+		</div>
+            </div>
+        </td>
+        
+        <td class="play-title-icon">
+            <div class="play-title-icon">
+                <div class="play-title-icon-border">
+                    <a href="../editions/2/index.html">
+                        
+                            <img class="play-title-icon" src="../media/titleicon/1-sir-john-oldcastle.png">
+                        
+                    </a>
+		</div>
+            </div>
+        </td>
+        
+        <td class="play-title-icon">
+            <div class="play-title-icon">
+                <div class="play-title-icon-border">
+                    <a href="../editions/31/index.html">
+                        
+                            <img class="play-title-icon" src="../media/titleicon/sonnets.png">
+                        
+                    </a>
+		</div>
+            </div>
+        </td>
+        
+        <td class="play-title-icon">
+            <div class="play-title-icon">
+                <div class="play-title-icon-border">
+                    <a href="../editions/32/index.html">
+                        
+                            <img class="play-title-icon" src="../media/titleicon/taming-of-the-shrew.png">
+                        
+                    </a>
+		</div>
+            </div>
+        </td>
+        
+    </tr>
+    <tr class="play-title">
+        
+        <td class="play-title">
+            <div class="play-title">
+                <a class="linkbutton" href="../editions/29/index.html">
+                    Richard III
+                </a>
+            </div>
+        </td>
+        
+        <td class="play-title">
+            <div class="play-title">
+                <a class="linkbutton" href="../editions/30/index.html">
+                    Romeo and Juliet
+                </a>
+            </div>
+        </td>
+        
+        <td class="play-title">
+            <div class="play-title">
+                <a class="linkbutton" href="../editions/2/index.html">
+                    1 Sir John Oldcastle
+                </a>
+            </div>
+        </td>
+        
+        <td class="play-title">
+            <div class="play-title">
+                <a class="linkbutton" href="../editions/31/index.html">
+                    Sonnets
+                </a>
+            </div>
+        </td>
+        
+        <td class="play-title">
+            <div class="play-title">
+                <a class="linkbutton" href="../editions/32/index.html">
+                    The Taming of a/the Shrew
+                </a>
+            </div>
+        </td>
+        
+    </tr>
+    
+    <tr class="play-title-icon">
+        
+        <td class="play-title-icon">
+            <div class="play-title-icon">
+                <div class="play-title-icon-border">
+                    <a href="../editions/34/index.html">
+                        
+                            <img class="play-title-icon" src="../media/titleicon/thomas-lord-cromwell.png">
+                        
+                    </a>
+		</div>
+            </div>
+        </td>
+        
+        <td class="play-title-icon">
+            <div class="play-title-icon">
+                <div class="play-title-icon-border">
+                    <a href="../editions/35/index.html">
+                        
+                            <img class="play-title-icon" src="../media/titleicon/titus-andronicus.png">
+                        
+                    </a>
+		</div>
+            </div>
+        </td>
+        
+        <td class="play-title-icon">
+            <div class="play-title-icon">
+                <div class="play-title-icon-border">
+                    <a href="../editions/36/index.html">
+                        
+                            <img class="play-title-icon" src="../media/titleicon/troilus-and-cressida.png">
+                        
+                    </a>
+		</div>
+            </div>
+        </td>
+        
+        <td class="play-title-icon">
+            <div class="play-title-icon">
+                <div class="play-title-icon-border">
+                    <a href="../editions/3/index.html">
+                        
+                            <img class="play-title-icon" src="../media/titleicon/troublesome-reign-of-king-john.png">
+                        
+                    </a>
+		</div>
+            </div>
+        </td>
+        
+        <td class="play-title-icon">
+            <div class="play-title-icon">
+                <div class="play-title-icon-border">
+                    <a href="../editions/37/index.html">
+                        
+                            <img class="play-title-icon" src="../media/titleicon/two-noble-kinsmen.png">
+                        
+                    </a>
+		</div>
+            </div>
+        </td>
+        
+    </tr>
+    <tr class="play-title">
+        
+        <td class="play-title">
+            <div class="play-title">
+                <a class="linkbutton" href="../editions/34/index.html">
+                    Thomas Lord Cromwell
+                </a>
+            </div>
+        </td>
+        
+        <td class="play-title">
+            <div class="play-title">
+                <a class="linkbutton" href="../editions/35/index.html">
+                    Titus Andronicus
+                </a>
+            </div>
+        </td>
+        
+        <td class="play-title">
+            <div class="play-title">
+                <a class="linkbutton" href="../editions/36/index.html">
+                    Troilus and Cressida
+                </a>
+            </div>
+        </td>
+        
+        <td class="play-title">
+            <div class="play-title">
+                <a class="linkbutton" href="../editions/3/index.html">
+                    1&amp;2 The Troublesome Reign of King John
+                </a>
+            </div>
+        </td>
+        
+        <td class="play-title">
+            <div class="play-title">
+                <a class="linkbutton" href="../editions/37/index.html">
+                    The Two Noble Kinsmen
+                </a>
+            </div>
+        </td>
+        
+    </tr>
+    
+    <tr class="play-title-icon">
+        
+        <td class="play-title-icon">
+            <div class="play-title-icon">
+                <div class="play-title-icon-border">
+                    <a href="../editions/38/index.html">
+                        
+                            <img class="play-title-icon" src="../media/titleicon/venus-and-adonis.png">
+                        
+                    </a>
+		</div>
+            </div>
+        </td>
+        
+        <td class="play-title-icon">
+            <div class="play-title-icon">
+                <div class="play-title-icon-border">
+                    <a href="../editions/39/index.html">
+                        
+                            <img class="play-title-icon" src="../media/titleicon/whole-contention.png">
+                        
+                    </a>
+		</div>
+            </div>
+        </td>
+        
+        <td class="play-title-icon">
+            <div class="play-title-icon">
+                <div class="play-title-icon-border">
+                    <a href="../editions/40/index.html">
+                        
+                            <img class="play-title-icon" src="../media/titleicon/yorkshire-tragedy.png">
+                        
+                    </a>
+		</div>
+            </div>
+        </td>
+        
+    </tr>
+    <tr class="play-title">
+        
+        <td class="play-title">
+            <div class="play-title">
+                <a class="linkbutton" href="../editions/38/index.html">
+                    Venus and Adonis
+                </a>
+            </div>
+        </td>
+        
+        <td class="play-title">
+            <div class="play-title">
+                <a class="linkbutton" href="../editions/39/index.html">
+                    The Whole Contention Between the Two Famous Houses, Lancaster and York
+                </a>
+            </div>
+        </td>
+        
+        <td class="play-title">
+            <div class="play-title">
+                <a class="linkbutton" href="../editions/40/index.html">
+                    A Yorkshire Tragedy
+                </a>
+            </div>
+        </td>
+        
+    </tr>
+    
+</tbody></table>
+
+
+
+                <div class="footer">
+                    
+<table class="footer-nav">
+   <tbody><tr>
+     <th>
+       <span><a href="../about/advisoryboard/index.html">advisory board</a></span>
+       <span><a href="../about/references/index.html">references</a></span>
+       <span><a href="../contact/index.html">contact</a></span>
+     </th>
+   </tr>
+</tbody></table>
+
+                </div>
+            </div>
+        </div>
+    
+
+
+</body></html>

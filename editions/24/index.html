@@ -1,0 +1,384 @@
+<html><head>
+        
+
+<meta charset="utf-8">
+
+<link rel="shortcut icon" type="image/ico" href="../../static/census/images/favicon.3c532e7612ef.png">
+
+<!-- Remote CSS -->
+
+<link href="../../css/index.html" rel="stylesheet">
+<link href="../../css/index.html" rel="stylesheet">
+<link rel="stylesheet prefetch" href="../../ajax/libs/semantic-ui/2.1.8/components/icon.min.css">
+<link rel="stylesheet" href="../../releases/v5.0.8/css/solid.css" integrity="sha384-v2Tw72dyUXeU3y4aM2Y0tBJQkGfplr39mxZqlTBDUZAb9BGoC40+rdFCG0m10lXk" crossorigin="anonymous">
+<link rel="stylesheet" href="../../releases/v5.0.8/css/fontawesome.css" integrity="sha384-q3jl8XQu1OpdLgGFvNRnPdj5VIlCvgsDQTQB6owSOHWlAurxul7f+JpUOVdAiJ5P" crossorigin="anonymous">
+
+<!-- Remote JS -->
+
+<!-- <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.12.4/jquery.min.js"></script> -->
+<!-- <script src="https://code.jquery.com/jquery-1.10.2.js"></script> -->
+<!-- <script src="https://code.jquery.com/ui/1.11.4/jquery-ui.js"></script> -->
+<script src="../../ajax/libs/jquery/3.2.1/jquery.min.js"></script>
+<link rel="stylesheet" href="../../ajax/libs/jqueryui/1.12.1/themes/smoothness/jquery-ui.css">
+<script src="../../ajax/libs/jqueryui/1.12.1/jquery-ui.min.js"></script>
+
+<!-- Local CSS -->
+
+<link rel="stylesheet" type="text/css" href="../../static/census/style.f625957d67b9.css">
+
+<!-- Local JS -->
+
+<script src="../../static/census/js/utils.cdf1ea897b68.js"></script>
+
+<title>Shakespeare Census</title>
+
+<!-- Matomo -->
+<script type="text/javascript">
+  var _paq = window._paq || [];
+  /* tracker methods like "setCustomDimension" should be called before "trackPageView" */
+  _paq.push(['trackPageView']);
+  _paq.push(['enableLinkTracking']);
+  (function() {
+    var u="//upenndigitalscholarship.org/piwik/";
+    _paq.push(['setTrackerUrl', u+'matomo.php']);
+    _paq.push(['setSiteId', '61']);
+    var d=document, g=d.createElement('script'), s=d.getElementsByTagName('script')[0];
+    g.type='text/javascript'; g.async=true; g.defer=true; g.src=u+'matomo.js'; s.parentNode.insertBefore(g,s);
+  })();
+</script>
+<!-- End Matomo Code -->
+
+
+    </head>
+    <body>
+        <div class="frame-container">
+            <div class="outer-frame">
+                <header>
+                    
+
+<div class="tucked">
+    
+
+    <a class="button" href="../../login/index.html">Sign in</a>
+    
+    <!-- A normally-styled non-breaking space always appears here
+        to ensure consistent div height. Someday we will find the
+        correct way to do this. -->
+        &nbsp;
+</div>
+<table class="title">
+    <tbody><tr>
+        <th>
+            &nbsp;
+        </th>
+        <th>
+            &nbsp;
+        </th>
+        <th>
+            &nbsp;
+        </th>
+        <th>
+            &nbsp;
+        </th>
+   </tr>
+    <tr>
+        <td colspan="4">
+          
+            <a href="../../homepage/index.html">Shakespeare Census</a><br>
+          
+        </td>
+    </tr>
+</tbody></table>
+
+<table class="header-title-nav">
+   <tbody><tr>
+     <th>
+       <a href="../../about/index.html">about</a>
+     </th>
+     <th>
+       <a href="#search/index.html" id="site-search-button">search</a>
+     </th>
+   </tr>
+</tbody></table>
+
+<div class="search-bar">
+  <form id="search-bar-form" class="hidden" action="../../search/index.html" method="get">
+    <select id="search-bar-form-field" name="field">
+      <option disabled="" selected="" value="">Search by...</option>
+      <option value="keyword">Keyword</option>
+      <option value="location">Location</option>
+      <option value="provenance_name">Provenance Name</option>
+      <option value="collection">Specific Features</option>
+      <option value="year">Year</option>
+      <option value="stc">STC / Wing #</option>
+      <option value="bartlett">Bartlett #</option>
+      <option value="nsc">SC #</option>
+    </select>
+    <input id="search-bar-form-text" type="text" name="value" placeholder="Search..">
+    <input id="search-bar-form-submit" type="submit" value="Submit">
+  </form>
+</div>
+
+<script>
+    utils.get.id('site-search-button').addEventListener('click', function () {
+        utils.togglehide.id('search-bar-form');
+    });
+    $(function() {
+        var autofillMap = {
+            location: 'https://shakespearecensus.org/autofill/location/',
+            provenance_name: 'https://shakespearecensus.org/autofill/provenance/',
+            collection: 'https://shakespearecensus.org/autofill/collection/'
+        };
+
+        var autofillResponse = function(field, query, response) {
+            fetch(autofillMap[field] + query)
+                .then((matches) => {
+                    return matches.json()
+                })
+                .then((matches_json) => {
+                    return response(matches_json.matches);
+                });
+        };
+
+        $('#search-bar-form-text').autocomplete({
+            minLength: 3,
+            source: function(request, response) {
+                var field_el = utils.get.id('search-bar-form-field');
+                var field = field_el.options[field_el.selectedIndex].value;
+                if (autofillMap.hasOwnProperty(field)) {
+                    autofillResponse(field, request.term, response);
+                }
+            },
+
+            // This is a simple way to automatically submit the form when
+            // a value is selected. But it behaves counterintuitively in 
+            // a couple of cases. I haven't been able to work out why.
+            // So for now you have to hit tab and then enter.
+            select: function(evt, ui) {
+                $('#search-bar-form-text').val(ui.item.value);
+                $('#search-bar-form').submit();
+            },
+
+            // focus: function(evt, ui) {
+            // }
+        });
+        
+        $('#search-bar-form-field').change(function(evt) {
+            if ($('#search-bar-form-field option:selected').val() === 'collection') {
+                $('#search-bar-form-text').autocomplete('search', '   ');
+            }
+        });
+    });
+
+
+    // if (window.location.hash && window.location.hash === '#search') {
+    //    utils.get.id('search-bar-form').classList.remove('hidden');
+    // }
+</script>
+
+                </header>
+
+                
+
+
+<div class="wrapper">
+    <table class="play-title-header">
+        <tbody><tr>
+            <td rowspan="3" class="play-title-header-icon">
+                <div class="play-title-icon-border">
+                                 
+                        <img class="play-title-icon" src="../../media/titleicon/pericles.png">
+                       
+                </div>
+            </td>
+            <td class="play-title-header">
+                Pericles
+                
+            </td>
+        </tr>
+        <tr>
+            <td class="play-issue-header">
+                <span>All issues</span>
+            </td>
+        </tr>
+        <tr>
+            <td class="play-issue-header">
+                
+                    
+                        <span>Extant copies: 101, plus 1 fragment</span>
+                    
+                
+            </td>
+        </tr>
+    </tbody></table>
+    <table class="play-detail-set">
+        <tbody><tr>
+            
+                <th class="even"> Edition </th>
+            
+            <th class="even"> Year </th>
+            <th class="even"> STC / Wing</th>
+            <th class="even"> ESTC </th>
+        </tr>
+        
+        <tr>
+            <td>
+                <a href="../../copy/74/index.html">
+                    
+                    1
+                    
+                </a>
+                
+            </td>
+            <td><a href="../../copy/74/index.html">1609</a></td>
+            <td><a href="../../copy/74/index.html">22334</a></td>
+            <td>
+                <a href="../../copy/74/index.html">S111190</a>
+                
+            </td>
+        </tr>
+        
+        <tr>
+            <td>
+                <a href="../../copy/75/index.html">
+                    
+                    2
+                    
+                </a>
+                
+            </td>
+            <td><a href="../../copy/75/index.html">1609</a></td>
+            <td><a href="../../copy/75/index.html">22335</a></td>
+            <td>
+                <a href="../../copy/75/index.html">S111194</a>
+                
+            </td>
+        </tr>
+        
+        <tr>
+            <td>
+                <a href="../../copy/76/index.html">
+                    
+                    3
+                    
+                </a>
+                
+            </td>
+            <td><a href="../../copy/76/index.html">1611</a></td>
+            <td><a href="../../copy/76/index.html">22336</a></td>
+            <td>
+                <a href="../../copy/76/index.html">S101699</a>
+                
+            </td>
+        </tr>
+        
+        <tr>
+            <td>
+                <a href="../../copy/146/index.html">
+                    
+                    4
+                    
+                </a>
+                
+            </td>
+            <td><a href="../../copy/146/index.html">1619</a></td>
+            <td><a href="../../copy/146/index.html">26101</a></td>
+            <td>
+                <a href="../../copy/146/index.html">S111147</a>
+                
+            </td>
+        </tr>
+        
+        <tr>
+            <td>
+                <a href="../../copy/77/index.html">
+                    
+                    5
+                    
+                </a>
+                
+            </td>
+            <td><a href="../../copy/77/index.html">1630</a></td>
+            <td><a href="../../copy/77/index.html">22337</a></td>
+            <td>
+                <a href="../../copy/77/index.html">S1139</a>
+                
+            </td>
+        </tr>
+        
+        <tr>
+            <td>
+                <a href="../../copy/78/index.html">
+                    
+                    5
+                    
+                </a>
+                
+            </td>
+            <td><a href="../../copy/78/index.html">1630</a></td>
+            <td><a href="../../copy/78/index.html">22338</a></td>
+            <td>
+                <a href="../../copy/78/index.html">S111198</a>
+                
+            </td>
+        </tr>
+        
+        <tr>
+            <td>
+                <a href="../../copy/170/index.html">
+                    
+                    5
+                    
+                </a>
+                
+            </td>
+            <td><a href="../../copy/170/index.html">1630</a></td>
+            <td><a href="../../copy/170/index.html">[Unknown]</a></td>
+            <td>
+                <a href="../../copy/170/index.html">[Unknown]</a>
+                
+            </td>
+        </tr>
+        
+        <tr>
+            <td>
+                <a href="../../copy/79/index.html">
+                    
+                    6
+                    
+                </a>
+                
+            </td>
+            <td><a href="../../copy/79/index.html">1635</a></td>
+            <td><a href="../../copy/79/index.html">22339</a></td>
+            <td>
+                <a href="../../copy/79/index.html">S111200</a>
+                
+            </td>
+        </tr>
+        
+    </tbody></table>
+</div>
+
+
+
+
+                <div class="footer">
+                    
+<table class="footer-nav">
+   <tbody><tr>
+     <th>
+       <span><a href="../../about/advisoryboard/index.html">advisory board</a></span>
+       <span><a href="../../about/references/index.html">references</a></span>
+       <span><a href="../../contact/index.html">contact</a></span>
+     </th>
+   </tr>
+</tbody></table>
+
+                </div>
+            </div>
+        </div>
+    
+
+
+</body></html>

@@ -1,0 +1,554 @@
+<html><head>
+        
+
+<meta charset="utf-8">
+
+<link rel="shortcut icon" type="image/ico" href="../../static/census/images/favicon.3c532e7612ef.png">
+
+<!-- Remote CSS -->
+
+<link href="../../css/index.html" rel="stylesheet">
+<link href="../../css/index.html" rel="stylesheet">
+<link rel="stylesheet prefetch" href="../../ajax/libs/semantic-ui/2.1.8/components/icon.min.css">
+<link rel="stylesheet" href="../../releases/v5.0.8/css/solid.css" integrity="sha384-v2Tw72dyUXeU3y4aM2Y0tBJQkGfplr39mxZqlTBDUZAb9BGoC40+rdFCG0m10lXk" crossorigin="anonymous">
+<link rel="stylesheet" href="../../releases/v5.0.8/css/fontawesome.css" integrity="sha384-q3jl8XQu1OpdLgGFvNRnPdj5VIlCvgsDQTQB6owSOHWlAurxul7f+JpUOVdAiJ5P" crossorigin="anonymous">
+
+<!-- Remote JS -->
+
+<!-- <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.12.4/jquery.min.js"></script> -->
+<!-- <script src="https://code.jquery.com/jquery-1.10.2.js"></script> -->
+<!-- <script src="https://code.jquery.com/ui/1.11.4/jquery-ui.js"></script> -->
+<script src="../../ajax/libs/jquery/3.2.1/jquery.min.js"></script>
+<link rel="stylesheet" href="../../ajax/libs/jqueryui/1.12.1/themes/smoothness/jquery-ui.css">
+<script src="../../ajax/libs/jqueryui/1.12.1/jquery-ui.min.js"></script>
+
+<!-- Local CSS -->
+
+<link rel="stylesheet" type="text/css" href="../../static/census/style.f625957d67b9.css">
+
+<!-- Local JS -->
+
+<script src="../../static/census/js/utils.cdf1ea897b68.js"></script>
+
+<title>Shakespeare Census</title>
+
+<!-- Matomo -->
+<script type="text/javascript">
+  var _paq = window._paq || [];
+  /* tracker methods like "setCustomDimension" should be called before "trackPageView" */
+  _paq.push(['trackPageView']);
+  _paq.push(['enableLinkTracking']);
+  (function() {
+    var u="//upenndigitalscholarship.org/piwik/";
+    _paq.push(['setTrackerUrl', u+'matomo.php']);
+    _paq.push(['setSiteId', '61']);
+    var d=document, g=d.createElement('script'), s=d.getElementsByTagName('script')[0];
+    g.type='text/javascript'; g.async=true; g.defer=true; g.src=u+'matomo.js'; s.parentNode.insertBefore(g,s);
+  })();
+</script>
+<!-- End Matomo Code -->
+
+
+    </head>
+    <body>
+        <div class="frame-container">
+            <div class="outer-frame">
+                <header>
+                    
+
+<div class="tucked">
+    
+
+    <a class="button" href="../../login/index.html">Sign in</a>
+    
+    <!-- A normally-styled non-breaking space always appears here
+        to ensure consistent div height. Someday we will find the
+        correct way to do this. -->
+        &nbsp;
+</div>
+<table class="title">
+    <tbody><tr>
+        <th>
+            &nbsp;
+        </th>
+        <th>
+            &nbsp;
+        </th>
+        <th>
+            &nbsp;
+        </th>
+        <th>
+            &nbsp;
+        </th>
+   </tr>
+    <tr>
+        <td colspan="4">
+          
+            <a href="../../homepage/index.html">Shakespeare Census</a><br>
+          
+        </td>
+    </tr>
+</tbody></table>
+
+<table class="header-title-nav">
+   <tbody><tr>
+     <th>
+       <a href="../../about/index.html">about</a>
+     </th>
+     <th>
+       <a href="#search/index.html" id="site-search-button">search</a>
+     </th>
+   </tr>
+</tbody></table>
+
+<div class="search-bar">
+  <form id="search-bar-form" class="hidden" action="../../search/index.html" method="get">
+    <select id="search-bar-form-field" name="field">
+      <option disabled="" selected="" value="">Search by...</option>
+      <option value="keyword">Keyword</option>
+      <option value="location">Location</option>
+      <option value="provenance_name">Provenance Name</option>
+      <option value="collection">Specific Features</option>
+      <option value="year">Year</option>
+      <option value="stc">STC / Wing #</option>
+      <option value="bartlett">Bartlett #</option>
+      <option value="nsc">SC #</option>
+    </select>
+    <input id="search-bar-form-text" type="text" name="value" placeholder="Search..">
+    <input id="search-bar-form-submit" type="submit" value="Submit">
+  </form>
+</div>
+
+<script>
+    utils.get.id('site-search-button').addEventListener('click', function () {
+        utils.togglehide.id('search-bar-form');
+    });
+    $(function() {
+        var autofillMap = {
+            location: 'https://shakespearecensus.org/autofill/location/',
+            provenance_name: 'https://shakespearecensus.org/autofill/provenance/',
+            collection: 'https://shakespearecensus.org/autofill/collection/'
+        };
+
+        var autofillResponse = function(field, query, response) {
+            fetch(autofillMap[field] + query)
+                .then((matches) => {
+                    return matches.json()
+                })
+                .then((matches_json) => {
+                    return response(matches_json.matches);
+                });
+        };
+
+        $('#search-bar-form-text').autocomplete({
+            minLength: 3,
+            source: function(request, response) {
+                var field_el = utils.get.id('search-bar-form-field');
+                var field = field_el.options[field_el.selectedIndex].value;
+                if (autofillMap.hasOwnProperty(field)) {
+                    autofillResponse(field, request.term, response);
+                }
+            },
+
+            // This is a simple way to automatically submit the form when
+            // a value is selected. But it behaves counterintuitively in 
+            // a couple of cases. I haven't been able to work out why.
+            // So for now you have to hit tab and then enter.
+            select: function(evt, ui) {
+                $('#search-bar-form-text').val(ui.item.value);
+                $('#search-bar-form').submit();
+            },
+
+            // focus: function(evt, ui) {
+            // }
+        });
+        
+        $('#search-bar-form-field').change(function(evt) {
+            if ($('#search-bar-form-field option:selected').val() === 'collection') {
+                $('#search-bar-form-text').autocomplete('search', '   ');
+            }
+        });
+    });
+
+
+    // if (window.location.hash && window.location.hash === '#search') {
+    //    utils.get.id('search-bar-form').classList.remove('hidden');
+    // }
+</script>
+
+                </header>
+
+                
+
+
+<div class="wrapper">
+    <table class="play-title-header">
+        <tbody><tr>
+            <td rowspan="3" class="play-title-header-icon">
+                <div class="play-title-icon-border">
+                                 
+                        <img class="play-title-icon" src="../../media/titleicon/venus-and-adonis.png">
+                       
+                </div>
+            </td>
+            <td class="play-title-header">
+                Venus and Adonis
+                
+            </td>
+        </tr>
+        <tr>
+            <td class="play-issue-header">
+                <span>All issues</span>
+            </td>
+        </tr>
+        <tr>
+            <td class="play-issue-header">
+                
+                    
+                        <span>Extant copies: 24, plus 4 fragments</span>
+                    
+                
+            </td>
+        </tr>
+    </tbody></table>
+    <table class="play-detail-set">
+        <tbody><tr>
+            
+                <th class="even"> Edition </th>
+            
+            <th class="even"> Year </th>
+            <th class="even"> STC / Wing</th>
+            <th class="even"> ESTC </th>
+        </tr>
+        
+        <tr>
+            <td>
+                <a href="../../copy/126/index.html">
+                    
+                    1
+                    
+                </a>
+                
+            </td>
+            <td><a href="../../copy/126/index.html">1593</a></td>
+            <td><a href="../../copy/126/index.html">22354</a></td>
+            <td>
+                <a href="../../copy/126/index.html">S102412</a>
+                
+            </td>
+        </tr>
+        
+        <tr>
+            <td>
+                <a href="../../copy/127/index.html">
+                    
+                    2
+                    
+                </a>
+                
+            </td>
+            <td><a href="../../copy/127/index.html">1594</a></td>
+            <td><a href="../../copy/127/index.html">22355</a></td>
+            <td>
+                <a href="../../copy/127/index.html">S106376</a>
+                
+            </td>
+        </tr>
+        
+        <tr>
+            <td>
+                <a href="../../copy/128/index.html">
+                    
+                    3
+                    
+                </a>
+                
+            </td>
+            <td><a href="../../copy/128/index.html">[1595?]</a></td>
+            <td><a href="../../copy/128/index.html">22356</a></td>
+            <td>
+                <a href="../../copy/128/index.html">S107307</a>
+                
+            </td>
+        </tr>
+        
+        <tr>
+            <td>
+                <a href="../../copy/129/index.html">
+                    
+                    4
+                    
+                </a>
+                
+            </td>
+            <td><a href="../../copy/129/index.html">1596</a></td>
+            <td><a href="../../copy/129/index.html">22357</a></td>
+            <td>
+                <a href="../../copy/129/index.html">S2332</a>
+                
+            </td>
+        </tr>
+        
+        <tr>
+            <td>
+                <a href="../../copy/130/index.html">
+                    
+                    5
+                    
+                </a>
+                
+            </td>
+            <td><a href="../../copy/130/index.html">1599</a></td>
+            <td><a href="../../copy/130/index.html">22358</a></td>
+            <td>
+                <a href="../../copy/130/index.html">S106359</a>
+                
+            </td>
+        </tr>
+        
+        <tr>
+            <td>
+                <a href="../../copy/131/index.html">
+                    
+                    6
+                    
+                </a>
+                
+            </td>
+            <td><a href="../../copy/131/index.html">1599</a></td>
+            <td><a href="../../copy/131/index.html">22358a</a></td>
+            <td>
+                <a href="../../copy/131/index.html">S107306</a>
+                
+            </td>
+        </tr>
+        
+        <tr>
+            <td>
+                <a href="../../copy/132/index.html">
+                    
+                    7
+                    
+                </a>
+                
+            </td>
+            <td><a href="../../copy/132/index.html">[1602?]</a></td>
+            <td><a href="../../copy/132/index.html">22359</a></td>
+            <td>
+                <a href="../../copy/132/index.html">S114108</a>
+                
+            </td>
+        </tr>
+        
+        <tr>
+            <td>
+                <a href="../../copy/133/index.html">
+                    
+                    8
+                    
+                </a>
+                
+            </td>
+            <td><a href="../../copy/133/index.html">1602 [i.e. 1607-8?]</a></td>
+            <td><a href="../../copy/133/index.html">22360</a></td>
+            <td>
+                <a href="../../copy/133/index.html">S114110</a>
+                
+            </td>
+        </tr>
+        
+        <tr>
+            <td>
+                <a href="../../copy/134/index.html">
+                    
+                    9
+                    
+                </a>
+                
+            </td>
+            <td><a href="../../copy/134/index.html">1602 [i.e. 1608-9?]</a></td>
+            <td><a href="../../copy/134/index.html">22360a</a></td>
+            <td>
+                <a href="../../copy/134/index.html">S114112</a>
+                
+            </td>
+        </tr>
+        
+        <tr>
+            <td>
+                <a href="../../copy/135/index.html">
+                    
+                    10
+                    
+                </a>
+                
+            </td>
+            <td><a href="../../copy/135/index.html">1602 [i.e. 1610?]</a></td>
+            <td><a href="../../copy/135/index.html">22360b</a></td>
+            <td>
+                <a href="../../copy/135/index.html">S114114</a>
+                
+            </td>
+        </tr>
+        
+        <tr>
+            <td>
+                <a href="../../copy/136/index.html">
+                    
+                    11
+                    
+                </a>
+                
+            </td>
+            <td><a href="../../copy/136/index.html">1617</a></td>
+            <td><a href="../../copy/136/index.html">22361</a></td>
+            <td>
+                <a href="../../copy/136/index.html">S100018</a>
+                
+            </td>
+        </tr>
+        
+        <tr>
+            <td>
+                <a href="../../copy/137/index.html">
+                    
+                    12
+                    
+                </a>
+                
+            </td>
+            <td><a href="../../copy/137/index.html">1620</a></td>
+            <td><a href="../../copy/137/index.html">22362</a></td>
+            <td>
+                <a href="../../copy/137/index.html">S1652</a>
+                
+            </td>
+        </tr>
+        
+        <tr>
+            <td>
+                <a href="../../copy/138/index.html">
+                    
+                    13
+                    
+                </a>
+                
+            </td>
+            <td><a href="../../copy/138/index.html">1627</a></td>
+            <td><a href="../../copy/138/index.html">22363</a></td>
+            <td>
+                <a href="../../copy/138/index.html">S106378</a>
+                
+            </td>
+        </tr>
+        
+        <tr>
+            <td>
+                <a href="../../copy/139/index.html">
+                    
+                    14
+                    
+                </a>
+                
+            </td>
+            <td><a href="../../copy/139/index.html">1630</a></td>
+            <td><a href="../../copy/139/index.html">22364</a></td>
+            <td>
+                <a href="../../copy/139/index.html">S106230</a>
+                
+            </td>
+        </tr>
+        
+        <tr>
+            <td>
+                <a href="../../copy/140/index.html">
+                    
+                    15
+                    
+                </a>
+                
+            </td>
+            <td><a href="../../copy/140/index.html">[1630-36?]</a></td>
+            <td><a href="../../copy/140/index.html">22365</a></td>
+            <td>
+                <a href="../../copy/140/index.html">S114115</a>
+                
+            </td>
+        </tr>
+        
+        <tr>
+            <td>
+                <a href="../../copy/141/index.html">
+                    
+                    16
+                    
+                </a>
+                
+            </td>
+            <td><a href="../../copy/141/index.html">1636</a></td>
+            <td><a href="../../copy/141/index.html">22366</a></td>
+            <td>
+                <a href="../../copy/141/index.html">S104547</a>
+                
+            </td>
+        </tr>
+        
+        <tr>
+            <td>
+                <a href="../../copy/142/index.html">
+                    
+                    17
+                    
+                </a>
+                
+            </td>
+            <td><a href="../../copy/142/index.html">1675</a></td>
+            <td><a href="../../copy/142/index.html">S2957A</a></td>
+            <td>
+                <a href="../../copy/142/index.html">R2778</a>
+                
+            </td>
+        </tr>
+        
+        <tr>
+            <td>
+                <a href="../../copy/147/index.html">
+                    
+                    17
+                    
+                </a>
+                
+            </td>
+            <td><a href="../../copy/147/index.html">1675</a></td>
+            <td><a href="../../copy/147/index.html">S2957A</a></td>
+            <td>
+                <a href="../../copy/147/index.html">R234469</a>
+                
+            </td>
+        </tr>
+        
+    </tbody></table>
+</div>
+
+
+
+
+                <div class="footer">
+                    
+<table class="footer-nav">
+   <tbody><tr>
+     <th>
+       <span><a href="../../about/advisoryboard/index.html">advisory board</a></span>
+       <span><a href="../../about/references/index.html">references</a></span>
+       <span><a href="../../contact/index.html">contact</a></span>
+     </th>
+   </tr>
+</tbody></table>
+
+                </div>
+            </div>
+        </div>
+    
+
+
+</body></html>
