@@ -1,0 +1,4332 @@
+<html><head>
+        
+
+<meta charset="utf-8">
+
+<link rel="shortcut icon" type="image/ico" href="../../static/census/images/favicon.3c532e7612ef.png">
+
+<!-- Remote CSS -->
+
+<link href="../../css/index.html" rel="stylesheet">
+<link href="../../css/index.html" rel="stylesheet">
+<link rel="stylesheet prefetch" href="../../ajax/libs/semantic-ui/2.1.8/components/icon.min.css">
+<link rel="stylesheet" href="../../releases/v5.0.8/css/solid.css" integrity="sha384-v2Tw72dyUXeU3y4aM2Y0tBJQkGfplr39mxZqlTBDUZAb9BGoC40+rdFCG0m10lXk" crossorigin="anonymous">
+<link rel="stylesheet" href="../../releases/v5.0.8/css/fontawesome.css" integrity="sha384-q3jl8XQu1OpdLgGFvNRnPdj5VIlCvgsDQTQB6owSOHWlAurxul7f+JpUOVdAiJ5P" crossorigin="anonymous">
+
+<!-- Remote JS -->
+
+<!-- <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.12.4/jquery.min.js"></script> -->
+<!-- <script src="https://code.jquery.com/jquery-1.10.2.js"></script> -->
+<!-- <script src="https://code.jquery.com/ui/1.11.4/jquery-ui.js"></script> -->
+<script src="../../ajax/libs/jquery/3.2.1/jquery.min.js"></script>
+<link rel="stylesheet" href="../../ajax/libs/jqueryui/1.12.1/themes/smoothness/jquery-ui.css">
+<script src="../../ajax/libs/jqueryui/1.12.1/jquery-ui.min.js"></script>
+
+<!-- Local CSS -->
+
+<link rel="stylesheet" type="text/css" href="../../static/census/style.f625957d67b9.css">
+
+<!-- Local JS -->
+
+<script src="../../static/census/js/utils.cdf1ea897b68.js"></script>
+
+<title>Shakespeare Census</title>
+
+<!-- Matomo -->
+<script type="text/javascript">
+  var _paq = window._paq || [];
+  /* tracker methods like "setCustomDimension" should be called before "trackPageView" */
+  _paq.push(['trackPageView']);
+  _paq.push(['enableLinkTracking']);
+  (function() {
+    var u="//upenndigitalscholarship.org/piwik/";
+    _paq.push(['setTrackerUrl', u+'matomo.php']);
+    _paq.push(['setSiteId', '61']);
+    var d=document, g=d.createElement('script'), s=d.getElementsByTagName('script')[0];
+    g.type='text/javascript'; g.async=true; g.defer=true; g.src=u+'matomo.js'; s.parentNode.insertBefore(g,s);
+  })();
+</script>
+<!-- End Matomo Code -->
+
+
+    </head>
+    <body>
+        <div class="frame-container">
+            <div class="outer-frame">
+                <header>
+                    
+
+<div class="tucked">
+    
+
+    <a class="button" href="../../login/index.html">Sign in</a>
+    
+    <!-- A normally-styled non-breaking space always appears here
+        to ensure consistent div height. Someday we will find the
+        correct way to do this. -->
+        &nbsp;
+</div>
+<table class="title">
+    <tbody><tr>
+        <th>
+            &nbsp;
+        </th>
+        <th>
+            &nbsp;
+        </th>
+        <th>
+            &nbsp;
+        </th>
+        <th>
+            &nbsp;
+        </th>
+   </tr>
+    <tr>
+        <td colspan="4">
+          
+            <a href="../../homepage/index.html">Shakespeare Census</a><br>
+          
+        </td>
+    </tr>
+</tbody></table>
+
+<table class="header-title-nav">
+   <tbody><tr>
+     <th>
+       <a href="../../about/index.html">about</a>
+     </th>
+     <th>
+       <a href="#search/index.html" id="site-search-button">search</a>
+     </th>
+   </tr>
+</tbody></table>
+
+<div class="search-bar">
+  <form id="search-bar-form" class="hidden" action="../../search/index.html" method="get">
+    <select id="search-bar-form-field" name="field">
+      <option disabled="" selected="" value="">Search by...</option>
+      <option value="keyword">Keyword</option>
+      <option value="location">Location</option>
+      <option value="provenance_name">Provenance Name</option>
+      <option value="collection">Specific Features</option>
+      <option value="year">Year</option>
+      <option value="stc">STC / Wing #</option>
+      <option value="bartlett">Bartlett #</option>
+      <option value="nsc">SC #</option>
+    </select>
+    <input id="search-bar-form-text" type="text" name="value" placeholder="Search..">
+    <input id="search-bar-form-submit" type="submit" value="Submit">
+  </form>
+</div>
+
+<script>
+    utils.get.id('site-search-button').addEventListener('click', function () {
+        utils.togglehide.id('search-bar-form');
+    });
+    $(function() {
+        var autofillMap = {
+            location: 'https://shakespearecensus.org/autofill/location/',
+            provenance_name: 'https://shakespearecensus.org/autofill/provenance/',
+            collection: 'https://shakespearecensus.org/autofill/collection/'
+        };
+
+        var autofillResponse = function(field, query, response) {
+            fetch(autofillMap[field] + query)
+                .then((matches) => {
+                    return matches.json()
+                })
+                .then((matches_json) => {
+                    return response(matches_json.matches);
+                });
+        };
+
+        $('#search-bar-form-text').autocomplete({
+            minLength: 3,
+            source: function(request, response) {
+                var field_el = utils.get.id('search-bar-form-field');
+                var field = field_el.options[field_el.selectedIndex].value;
+                if (autofillMap.hasOwnProperty(field)) {
+                    autofillResponse(field, request.term, response);
+                }
+            },
+
+            // This is a simple way to automatically submit the form when
+            // a value is selected. But it behaves counterintuitively in 
+            // a couple of cases. I haven't been able to work out why.
+            // So for now you have to hit tab and then enter.
+            select: function(evt, ui) {
+                $('#search-bar-form-text').val(ui.item.value);
+                $('#search-bar-form').submit();
+            },
+
+            // focus: function(evt, ui) {
+            // }
+        });
+        
+        $('#search-bar-form-field').change(function(evt) {
+            if ($('#search-bar-form-field option:selected').val() === 'collection') {
+                $('#search-bar-form-text').autocomplete('search', '   ');
+            }
+        });
+    });
+
+
+    // if (window.location.hash && window.location.hash === '#search') {
+    //    utils.get.id('search-bar-form').classList.remove('hidden');
+    // }
+</script>
+
+                </header>
+
+                
+
+<div class="wrapper">
+    <div>
+        <script type="text/javascript" src="../../static/census/js/bootstrap-modal.5fe4c14f9cbb.js"></script>
+        <script type="text/javascript" src="../../static/census/js/copy_detail_edit_modal.cc1cec2e0a60.js"></script>
+        <link rel="stylesheet" type="text/css" href="../../static/census/css/modal.bdcdb5569f72.css">
+
+        <div id="copyModal" class="modal fade" role="dialog"></div>
+    </div>
+        
+    
+
+    <table class="play-title-header">
+        <tbody><tr>
+            <td rowspan="3" class="play-title-header-icon">
+                <div class="play-title-icon-border">
+                    <a href="../../editions/44/index.html">
+                        
+                            <img class="play-title-icon" src="../../media/titleicon/f2.png">
+                        
+                    </a>
+                </div>
+            </td>
+            <td class="play-title-header">
+                <a href="../../editions/44/index.html">
+                    Comedies, Histories, and Tragedies: F2
+                </a>
+            </td>
+        </tr>
+        <tr>
+            <td class="play-issue-header">
+                <span>
+                    
+                    Allot "at the signe"
+                    
+                    
+                    (2°)
+                    
+                </span>
+                <span>1632</span>
+                <span>STC / Wing:&nbsp;22274a</span>
+
+                
+
+                     <span class="static-text">
+                        ESTC:&nbsp;<a href="http://estc.bl.uk/S111235" target="_blank">S111235</a>
+                    </span>
+                
+
+                
+                    <span class="static-text">
+                        DEEP: not in DEEP
+                    </span>
+                
+            </td>
+        </tr>
+        <tr>
+            <td class="play-issue-header">
+                
+                    
+                    <span>Extant copies: 118</span>
+                    
+                    
+                
+            </td>
+        </tr>
+    </tbody></table>
+
+    <table class="play-detail-set">
+
+        
+        <tbody><tr>
+            <th class="terse"> SC&nbsp;# </th>
+            <th class="detailed"> Location </th>
+            <th class="even"> Shelfmark </th>
+            <th class="icon">&nbsp;</th>
+            <th class="icon">&nbsp;</th>
+            <th class="icon">&nbsp;</th>
+        </tr>
+        
+        <tr>
+            <td>
+                
+                    <a class="copy_data" href="index.html" data-form="/copydata/7350/" title="Details">
+                        6059
+                    </a>
+                
+                
+            </td>
+            <td>
+                <a class="copy_data copy_data_6059" href="index.html" data-form="/copydata/7350/" title="Details">
+                    Boston Public Library
+                </a>
+            </td>
+            <td>
+                
+                    <a class="copy_data" href="index.html" data-form="/copydata/7350/" title="Details">
+                        G.174.2
+                    </a>
+                
+            </td>
+            <td>
+                
+                      <span title="This existence of this copy at the location has been verified." class="verified-symbol">✓</span>
+                
+            </td>
+            <td>
+                
+            </td>
+            <td>
+                
+                    <span class="unicode-icon" title="Link to digital facsimile of this copy">
+                        <a href="https://archive.org/details/mrwilliamshakesp00shak_5" target="_blank">
+                        <i class="fas fa-camera-retro"></i>
+                        </a>
+                    </span>
+                
+            </td>
+        </tr>
+        
+        <tr>
+            <td>
+                
+                    <a class="copy_data" href="index.html" data-form="/copydata/7351/" title="Details">
+                        6060
+                    </a>
+                
+                
+            </td>
+            <td>
+                <a class="copy_data copy_data_6060" href="index.html" data-form="/copydata/7351/" title="Details">
+                    Boston Public Library
+                </a>
+            </td>
+            <td>
+                
+                    <a class="copy_data" href="index.html" data-form="/copydata/7351/" title="Details">
+                        G.174.3
+                    </a>
+                
+            </td>
+            <td>
+                
+                      <span title="This existence of this copy at the location has been verified." class="verified-symbol">✓</span>
+                
+            </td>
+            <td>
+                
+            </td>
+            <td>
+                
+                    <span class="unicode-icon" title="Link to digital facsimile of this copy">
+                        <a href="https://archive.org/details/mrwilliamshakesp00shak_8/page/n9/mode/2up" target="_blank">
+                        <i class="fas fa-camera-retro"></i>
+                        </a>
+                    </span>
+                
+            </td>
+        </tr>
+        
+        <tr>
+            <td>
+                
+                    <a class="copy_data" href="index.html" data-form="/copydata/7389/" title="Details">
+                        6061
+                    </a>
+                
+                
+            </td>
+            <td>
+                <a class="copy_data copy_data_6061" href="index.html" data-form="/copydata/7389/" title="Details">
+                    Bowdoin College
+                </a>
+            </td>
+            <td>
+                
+                    <a class="copy_data" href="index.html" data-form="/copydata/7389/" title="Details">
+                        PR2751 .A2 1632 Vlt
+                    </a>
+                
+            </td>
+            <td>
+                
+                      <span title="This existence of this copy at the location has been verified." class="verified-symbol">✓</span>
+                
+            </td>
+            <td>
+                
+            </td>
+            <td>
+                
+            </td>
+        </tr>
+        
+        <tr>
+            <td>
+                
+                    <a class="copy_data" href="index.html" data-form="/copydata/6856/" title="Details">
+                        6062
+                    </a>
+                
+                
+            </td>
+            <td>
+                <a class="copy_data copy_data_6062" href="index.html" data-form="/copydata/6856/" title="Details">
+                    British Library
+                </a>
+            </td>
+            <td>
+                
+                    <a class="copy_data" href="index.html" data-form="/copydata/6856/" title="Details">
+                        79.I.5
+                    </a>
+                
+            </td>
+            <td>
+                
+                      <span title="The existence of this copy has not been verified; location derived from ESTC." class="unverified-symbol">⃠</span>
+                
+            </td>
+            <td>
+                
+            </td>
+            <td>
+                
+            </td>
+        </tr>
+        
+        <tr>
+            <td>
+                
+                    <a class="copy_data" href="index.html" data-form="/copydata/6853/" title="Details">
+                        6063
+                    </a>
+                
+                
+            </td>
+            <td>
+                <a class="copy_data copy_data_6063" href="index.html" data-form="/copydata/6853/" title="Details">
+                    British Library
+                </a>
+            </td>
+            <td>
+                
+                    <a class="copy_data" href="index.html" data-form="/copydata/6853/" title="Details">
+                        C.122.g.2
+                    </a>
+                
+            </td>
+            <td>
+                
+                      <span title="The existence of this copy has not been verified; location derived from ESTC." class="unverified-symbol">⃠</span>
+                
+            </td>
+            <td>
+                
+            </td>
+            <td>
+                
+            </td>
+        </tr>
+        
+        <tr>
+            <td>
+                
+                    <a class="copy_data" href="index.html" data-form="/copydata/7312/" title="Details">
+                        6064
+                    </a>
+                
+                
+            </td>
+            <td>
+                <a class="copy_data copy_data_6064" href="index.html" data-form="/copydata/7312/" title="Details">
+                    Bryn Mawr College
+                </a>
+            </td>
+            <td>
+                
+                    <a class="copy_data" href="index.html" data-form="/copydata/7312/" title="Details">
+                        822.33 ICo q
+                    </a>
+                
+            </td>
+            <td>
+                
+                      <span title="This existence of this copy at the location has been verified." class="verified-symbol">✓</span>
+                
+            </td>
+            <td>
+                
+            </td>
+            <td>
+                
+            </td>
+        </tr>
+        
+        <tr>
+            <td>
+                
+                    <a class="copy_data" href="index.html" data-form="/copydata/6860/" title="Details">
+                        6065
+                    </a>
+                
+                
+            </td>
+            <td>
+                <a class="copy_data copy_data_6065" href="index.html" data-form="/copydata/6860/" title="Details">
+                    Cambridge University
+                </a>
+            </td>
+            <td>
+                
+                    <a class="copy_data" href="index.html" data-form="/copydata/6860/" title="Details">
+                        SSS.10.7
+                    </a>
+                
+            </td>
+            <td>
+                
+                      <span title="This existence of this copy at the location has been verified." class="verified-symbol">✓</span>
+                
+            </td>
+            <td>
+                
+            </td>
+            <td>
+                
+            </td>
+        </tr>
+        
+        <tr>
+            <td>
+                
+                    <a class="copy_data" href="index.html" data-form="/copydata/7536/" title="Details">
+                        6066
+                    </a>
+                
+                
+            </td>
+            <td>
+                <a class="copy_data copy_data_6066" href="index.html" data-form="/copydata/7536/" title="Details">
+                    Cambridge University, Fitzwilliam Museum
+                </a>
+            </td>
+            <td>
+                
+                    <a class="copy_data" href="index.html" data-form="/copydata/7536/" title="Details">
+                        [none]
+                    </a>
+                
+            </td>
+            <td>
+                
+                      <span title="The existence of this copy has not been verified; location entered by an administrator." class="unverified-symbol">⃠</span>
+                
+            </td>
+            <td>
+                
+            </td>
+            <td>
+                
+            </td>
+        </tr>
+        
+        <tr>
+            <td>
+                
+                    <a class="copy_data" href="index.html" data-form="/copydata/6858/" title="Details">
+                        6067
+                    </a>
+                
+                
+            </td>
+            <td>
+                <a class="copy_data copy_data_6067" href="index.html" data-form="/copydata/6858/" title="Details">
+                    Cambridge University, Fitzwilliam Museum
+                </a>
+            </td>
+            <td>
+                
+                    <a class="copy_data" href="index.html" data-form="/copydata/6858/" title="Details">
+                        [none]
+                    </a>
+                
+            </td>
+            <td>
+                
+                      <span title="The existence of this copy has not been verified; location derived from ESTC." class="unverified-symbol">⃠</span>
+                
+            </td>
+            <td>
+                
+            </td>
+            <td>
+                
+            </td>
+        </tr>
+        
+        <tr>
+            <td>
+                
+                    <a class="copy_data" href="index.html" data-form="/copydata/6971/" title="Details">
+                        6068
+                    </a>
+                
+                
+            </td>
+            <td>
+                <a class="copy_data copy_data_6068" href="index.html" data-form="/copydata/6971/" title="Details">
+                    Cambridge University, Trinity College
+                </a>
+            </td>
+            <td>
+                
+                    <a class="copy_data" href="index.html" data-form="/copydata/6971/" title="Details">
+                        Grylls 10.230
+                    </a>
+                
+            </td>
+            <td>
+                
+                      <span title="This existence of this copy at the location has been verified." class="verified-symbol">✓</span>
+                
+            </td>
+            <td>
+                
+            </td>
+            <td>
+                
+            </td>
+        </tr>
+        
+        <tr>
+            <td>
+                
+                    <a class="copy_data" href="index.html" data-form="/copydata/7319/" title="Details">
+                        6263
+                    </a>
+                
+                
+            </td>
+            <td>
+                <a class="copy_data copy_data_6263" href="index.html" data-form="/copydata/7319/" title="Details">
+                    Carnegie Mellon University
+                </a>
+            </td>
+            <td>
+                
+                    <a class="copy_data" href="index.html" data-form="/copydata/7319/" title="Details">
+                        PR2751 .A2 1632
+                    </a>
+                
+            </td>
+            <td>
+                
+                      <span title="This existence of this copy at the location has been verified." class="verified-symbol">✓</span>
+                
+            </td>
+            <td>
+                
+            </td>
+            <td>
+                
+                    <span class="unicode-icon" title="Link to digital facsimile of this copy">
+                        <a href="https://digitalcollections.library.cmu.edu/node/392603?search_api_fulltext=" target="_blank">
+                        <i class="fas fa-camera-retro"></i>
+                        </a>
+                    </span>
+                
+            </td>
+        </tr>
+        
+        <tr>
+            <td>
+                
+                    <a class="copy_data" href="index.html" data-form="/copydata/8168/" title="Details">
+                        6069
+                    </a>
+                
+                
+            </td>
+            <td>
+                <a class="copy_data copy_data_6069" href="index.html" data-form="/copydata/8168/" title="Details">
+                    Charlecote House
+                </a>
+            </td>
+            <td>
+                
+                    <a class="copy_data" href="index.html" data-form="/copydata/8168/" title="Details">
+                        CHA
+                    </a>
+                
+            </td>
+            <td>
+                
+                      <span title="This existence of this copy at the location has been verified." class="verified-symbol">✓</span>
+                
+            </td>
+            <td>
+                
+            </td>
+            <td>
+                
+            </td>
+        </tr>
+        
+        <tr>
+            <td>
+                
+                    <a class="copy_data" href="index.html" data-form="/copydata/7352/" title="Details">
+                        6264
+                    </a>
+                
+                
+            </td>
+            <td>
+                <a class="copy_data copy_data_6264" href="index.html" data-form="/copydata/7352/" title="Details">
+                    Charleston Library Society
+                </a>
+            </td>
+            <td>
+                
+                    <a class="copy_data" href="index.html" data-form="/copydata/7352/" title="Details">
+                        H.C. YBES Sh1 Oversize 0
+                    </a>
+                
+            </td>
+            <td>
+                
+                      <span title="This existence of this copy at the location has been verified." class="verified-symbol">✓</span>
+                
+            </td>
+            <td>
+                
+            </td>
+            <td>
+                
+            </td>
+        </tr>
+        
+        <tr>
+            <td>
+                
+                    <a class="copy_data" href="index.html" data-form="/copydata/7354/" title="Details">
+                        6070
+                    </a>
+                
+                
+            </td>
+            <td>
+                <a class="copy_data copy_data_6070" href="index.html" data-form="/copydata/7354/" title="Details">
+                    Claremont Colleges
+                </a>
+            </td>
+            <td>
+                
+                    <a class="copy_data" href="index.html" data-form="/copydata/7354/" title="Details">
+                        PR2751 .A2
+                    </a>
+                
+            </td>
+            <td>
+                
+                      <span title="This existence of this copy at the location has been verified." class="verified-symbol">✓</span>
+                
+            </td>
+            <td>
+                
+            </td>
+            <td>
+                
+            </td>
+        </tr>
+        
+        <tr>
+            <td>
+                
+                    <a class="copy_data" href="index.html" data-form="/copydata/6973/" title="Details">
+                        6071
+                    </a>
+                
+                
+            </td>
+            <td>
+                <a class="copy_data copy_data_6071" href="index.html" data-form="/copydata/6973/" title="Details">
+                    Colgate University, Case Library
+                </a>
+            </td>
+            <td>
+                
+                    <a class="copy_data" href="index.html" data-form="/copydata/6973/" title="Details">
+                        PR2751 .A3 1632
+                    </a>
+                
+            </td>
+            <td>
+                
+                      <span title="The existence of this copy has not been verified; location entered by an administrator." class="unverified-symbol">⃠</span>
+                
+            </td>
+            <td>
+                
+            </td>
+            <td>
+                
+            </td>
+        </tr>
+        
+        <tr>
+            <td>
+                
+                    <a class="copy_data" href="index.html" data-form="/copydata/7353/" title="Details">
+                        6072
+                    </a>
+                
+                
+            </td>
+            <td>
+                <a class="copy_data copy_data_6072" href="index.html" data-form="/copydata/7353/" title="Details">
+                    Dartmouth College
+                </a>
+            </td>
+            <td>
+                
+                    <a class="copy_data" href="index.html" data-form="/copydata/7353/" title="Details">
+                        Hickmott 2
+                    </a>
+                
+            </td>
+            <td>
+                
+                      <span title="This existence of this copy at the location has been verified." class="verified-symbol">✓</span>
+                
+            </td>
+            <td>
+                
+            </td>
+            <td>
+                
+            </td>
+        </tr>
+        
+        <tr>
+            <td>
+                
+                    <a class="copy_data" href="index.html" data-form="/copydata/7980/" title="Details">
+                        6073
+                    </a>
+                
+                
+            </td>
+            <td>
+                <a class="copy_data copy_data_6073" href="index.html" data-form="/copydata/7980/" title="Details">
+                    Dartmouth College
+                </a>
+            </td>
+            <td>
+                
+                    <a class="copy_data" href="index.html" data-form="/copydata/7980/" title="Details">
+                        Val 824Sh J78
+                    </a>
+                
+            </td>
+            <td>
+                
+                      <span title="This existence of this copy at the location has been verified." class="verified-symbol">✓</span>
+                
+            </td>
+            <td>
+                
+            </td>
+            <td>
+                
+            </td>
+        </tr>
+        
+        <tr>
+            <td>
+                
+                    <a class="copy_data" href="index.html" data-form="/copydata/7388/" title="Details">
+                        6074
+                    </a>
+                
+                
+            </td>
+            <td>
+                <a class="copy_data copy_data_6074" href="index.html" data-form="/copydata/7388/" title="Details">
+                    Detroit Public Library
+                </a>
+            </td>
+            <td>
+                
+                    <a class="copy_data" href="index.html" data-form="/copydata/7388/" title="Details">
+                        XR S1 A12
+                    </a>
+                
+            </td>
+            <td>
+                
+                      <span title="This existence of this copy at the location has been verified." class="verified-symbol">✓</span>
+                
+            </td>
+            <td>
+                
+            </td>
+            <td>
+                
+            </td>
+        </tr>
+        
+        <tr>
+            <td>
+                
+                    <a class="copy_data" href="index.html" data-form="/copydata/7245/" title="Details">
+                        6075
+                    </a>
+                
+                
+            </td>
+            <td>
+                <a class="copy_data copy_data_6075" href="index.html" data-form="/copydata/7245/" title="Details">
+                    Duke University
+                </a>
+            </td>
+            <td>
+                
+                    <a class="copy_data" href="index.html" data-form="/copydata/7245/" title="Details">
+                        PR2751 .A2 1632 4to c.1
+                    </a>
+                
+            </td>
+            <td>
+                
+                      <span title="The existence of this copy has not been verified; location derived from ESTC." class="unverified-symbol">⃠</span>
+                
+            </td>
+            <td>
+                
+            </td>
+            <td>
+                
+            </td>
+        </tr>
+        
+        <tr>
+            <td>
+                
+                    <a class="copy_data" href="index.html" data-form="/copydata/7407/" title="Details">
+                        6076
+                    </a>
+                
+                
+            </td>
+            <td>
+                <a class="copy_data copy_data_6076" href="index.html" data-form="/copydata/7407/" title="Details">
+                    Eton College
+                </a>
+            </td>
+            <td>
+                
+                    <a class="copy_data" href="index.html" data-form="/copydata/7407/" title="Details">
+                        Sa2.3.17
+                    </a>
+                
+            </td>
+            <td>
+                
+                      <span title="This existence of this copy at the location has been verified." class="verified-symbol">✓</span>
+                
+            </td>
+            <td>
+                
+            </td>
+            <td>
+                
+            </td>
+        </tr>
+        
+        <tr>
+            <td>
+                
+                    <a class="copy_data" href="index.html" data-form="/copydata/6956/" title="Details">
+                        6077
+                    </a>
+                
+                
+            </td>
+            <td>
+                <a class="copy_data copy_data_6077" href="index.html" data-form="/copydata/6956/" title="Details">
+                    Folger Shakespeare Library
+                </a>
+            </td>
+            <td>
+                
+                    <a class="copy_data" href="index.html" data-form="/copydata/6956/" title="Details">
+                        STC 22274 Fo.2 no.03
+                    </a>
+                
+            </td>
+            <td>
+                
+                      <span title="This existence of this copy at the location has been verified." class="verified-symbol">✓</span>
+                
+            </td>
+            <td>
+                
+            </td>
+            <td>
+                
+            </td>
+        </tr>
+        
+        <tr>
+            <td>
+                
+                    <a class="copy_data" href="index.html" data-form="/copydata/6961/" title="Details">
+                        6078
+                    </a>
+                
+                
+            </td>
+            <td>
+                <a class="copy_data copy_data_6078" href="index.html" data-form="/copydata/6961/" title="Details">
+                    Folger Shakespeare Library
+                </a>
+            </td>
+            <td>
+                
+                    <a class="copy_data" href="index.html" data-form="/copydata/6961/" title="Details">
+                        STC 22274 Fo.2 no.08
+                    </a>
+                
+            </td>
+            <td>
+                
+                      <span title="This existence of this copy at the location has been verified." class="verified-symbol">✓</span>
+                
+            </td>
+            <td>
+                
+            </td>
+            <td>
+                
+            </td>
+        </tr>
+        
+        <tr>
+            <td>
+                
+                    <a class="copy_data" href="index.html" data-form="/copydata/7515/" title="Details">
+                        6079
+                    </a>
+                
+                
+            </td>
+            <td>
+                <a class="copy_data copy_data_6079" href="index.html" data-form="/copydata/7515/" title="Details">
+                    Folger Shakespeare Library
+                </a>
+            </td>
+            <td>
+                
+                    <a class="copy_data" href="index.html" data-form="/copydata/7515/" title="Details">
+                        STC 22274 Fo.2 no.22
+                    </a>
+                
+            </td>
+            <td>
+                
+                      <span title="This existence of this copy at the location has been verified." class="verified-symbol">✓</span>
+                
+            </td>
+            <td>
+                
+            </td>
+            <td>
+                
+            </td>
+        </tr>
+        
+        <tr>
+            <td>
+                
+                    <a class="copy_data" href="index.html" data-form="/copydata/6962/" title="Details">
+                        6080
+                    </a>
+                
+                
+            </td>
+            <td>
+                <a class="copy_data copy_data_6080" href="index.html" data-form="/copydata/6962/" title="Details">
+                    Folger Shakespeare Library
+                </a>
+            </td>
+            <td>
+                
+                    <a class="copy_data" href="index.html" data-form="/copydata/6962/" title="Details">
+                        STC 22274 Fo.2 no.24
+                    </a>
+                
+            </td>
+            <td>
+                
+                      <span title="This existence of this copy at the location has been verified." class="verified-symbol">✓</span>
+                
+            </td>
+            <td>
+                
+            </td>
+            <td>
+                
+            </td>
+        </tr>
+        
+        <tr>
+            <td>
+                
+                    <a class="copy_data" href="index.html" data-form="/copydata/6957/" title="Details">
+                        6081
+                    </a>
+                
+                
+            </td>
+            <td>
+                <a class="copy_data copy_data_6081" href="index.html" data-form="/copydata/6957/" title="Details">
+                    Folger Shakespeare Library
+                </a>
+            </td>
+            <td>
+                
+                    <a class="copy_data" href="index.html" data-form="/copydata/6957/" title="Details">
+                        STC 22274 Fo.2 no.30
+                    </a>
+                
+            </td>
+            <td>
+                
+                      <span title="This existence of this copy at the location has been verified." class="verified-symbol">✓</span>
+                
+            </td>
+            <td>
+                
+            </td>
+            <td>
+                
+            </td>
+        </tr>
+        
+        <tr>
+            <td>
+                
+                    <a class="copy_data" href="index.html" data-form="/copydata/6966/" title="Details">
+                        6082
+                    </a>
+                
+                
+            </td>
+            <td>
+                <a class="copy_data copy_data_6082" href="index.html" data-form="/copydata/6966/" title="Details">
+                    Folger Shakespeare Library
+                </a>
+            </td>
+            <td>
+                
+                    <a class="copy_data" href="index.html" data-form="/copydata/6966/" title="Details">
+                        STC 22274 Fo.2 no.31
+                    </a>
+                
+            </td>
+            <td>
+                
+                      <span title="This existence of this copy at the location has been verified." class="verified-symbol">✓</span>
+                
+            </td>
+            <td>
+                
+            </td>
+            <td>
+                
+            </td>
+        </tr>
+        
+        <tr>
+            <td>
+                
+                    <a class="copy_data" href="index.html" data-form="/copydata/6963/" title="Details">
+                        6083
+                    </a>
+                
+                
+            </td>
+            <td>
+                <a class="copy_data copy_data_6083" href="index.html" data-form="/copydata/6963/" title="Details">
+                    Folger Shakespeare Library
+                </a>
+            </td>
+            <td>
+                
+                    <a class="copy_data" href="index.html" data-form="/copydata/6963/" title="Details">
+                        STC 22274 Fo.2 no.35
+                    </a>
+                
+            </td>
+            <td>
+                
+                      <span title="This existence of this copy at the location has been verified." class="verified-symbol">✓</span>
+                
+            </td>
+            <td>
+                
+            </td>
+            <td>
+                
+            </td>
+        </tr>
+        
+        <tr>
+            <td>
+                
+                    <a class="copy_data" href="index.html" data-form="/copydata/6958/" title="Details">
+                        6084
+                    </a>
+                
+                
+            </td>
+            <td>
+                <a class="copy_data copy_data_6084" href="index.html" data-form="/copydata/6958/" title="Details">
+                    Folger Shakespeare Library
+                </a>
+            </td>
+            <td>
+                
+                    <a class="copy_data" href="index.html" data-form="/copydata/6958/" title="Details">
+                        STC 22274 Fo.2 no.37
+                    </a>
+                
+            </td>
+            <td>
+                
+                      <span title="This existence of this copy at the location has been verified." class="verified-symbol">✓</span>
+                
+            </td>
+            <td>
+                
+            </td>
+            <td>
+                
+            </td>
+        </tr>
+        
+        <tr>
+            <td>
+                
+                    <a class="copy_data" href="index.html" data-form="/copydata/6964/" title="Details">
+                        6085
+                    </a>
+                
+                
+            </td>
+            <td>
+                <a class="copy_data copy_data_6085" href="index.html" data-form="/copydata/6964/" title="Details">
+                    Folger Shakespeare Library
+                </a>
+            </td>
+            <td>
+                
+                    <a class="copy_data" href="index.html" data-form="/copydata/6964/" title="Details">
+                        STC 22274 Fo.2 no.44
+                    </a>
+                
+            </td>
+            <td>
+                
+                      <span title="This existence of this copy at the location has been verified." class="verified-symbol">✓</span>
+                
+            </td>
+            <td>
+                
+            </td>
+            <td>
+                
+            </td>
+        </tr>
+        
+        <tr>
+            <td>
+                
+                    <a class="copy_data" href="index.html" data-form="/copydata/6972/" title="Details">
+                        6086
+                    </a>
+                
+                
+            </td>
+            <td>
+                <a class="copy_data copy_data_6086" href="index.html" data-form="/copydata/6972/" title="Details">
+                    Haverford College
+                </a>
+            </td>
+            <td>
+                
+                    <a class="copy_data" href="index.html" data-form="/copydata/6972/" title="Details">
+                        Philips 45
+                    </a>
+                
+            </td>
+            <td>
+                
+                      <span title="This existence of this copy at the location has been verified." class="verified-symbol">✓</span>
+                
+            </td>
+            <td>
+                
+            </td>
+            <td>
+                
+            </td>
+        </tr>
+        
+        <tr>
+            <td>
+                
+                    <a class="copy_data" href="index.html" data-form="/copydata/7227/" title="Details">
+                        6087
+                    </a>
+                
+                
+            </td>
+            <td>
+                <a class="copy_data copy_data_6087" href="index.html" data-form="/copydata/7227/" title="Details">
+                    Henry E. Huntington Library and Art Gallery
+                </a>
+            </td>
+            <td>
+                
+                    <a class="copy_data" href="index.html" data-form="/copydata/7227/" title="Details">
+                        69383
+                    </a>
+                
+            </td>
+            <td>
+                
+                      <span title="This existence of this copy at the location has been verified." class="verified-symbol">✓</span>
+                
+            </td>
+            <td>
+                
+            </td>
+            <td>
+                
+            </td>
+        </tr>
+        
+        <tr>
+            <td>
+                
+                    <a class="copy_data" href="index.html" data-form="/copydata/6983/" title="Details">
+                        6088
+                    </a>
+                
+                
+            </td>
+            <td>
+                <a class="copy_data copy_data_6088" href="index.html" data-form="/copydata/6983/" title="Details">
+                    John Carter Brown Library
+                </a>
+            </td>
+            <td>
+                
+                    <a class="copy_data" href="index.html" data-form="/copydata/6983/" title="Details">
+                        D632 .S527m 2-SIZE
+                    </a>
+                
+            </td>
+            <td>
+                
+                      <span title="The existence of this copy has not been verified; location derived from ESTC." class="unverified-symbol">⃠</span>
+                
+            </td>
+            <td>
+                
+            </td>
+            <td>
+                
+            </td>
+        </tr>
+        
+        <tr>
+            <td>
+                
+                    <a class="copy_data" href="index.html" data-form="/copydata/6970/" title="Details">
+                        6089
+                    </a>
+                
+                
+            </td>
+            <td>
+                <a class="copy_data copy_data_6089" href="index.html" data-form="/copydata/6970/" title="Details">
+                    Johns Hopkins University
+                </a>
+            </td>
+            <td>
+                
+                    <a class="copy_data" href="index.html" data-form="/copydata/6970/" title="Details">
+                        PO 2751 .A2 1632 FOLIO
+                    </a>
+                
+            </td>
+            <td>
+                
+                      <span title="This existence of this copy at the location has been verified." class="verified-symbol">✓</span>
+                
+            </td>
+            <td>
+                
+            </td>
+            <td>
+                
+            </td>
+        </tr>
+        
+        <tr>
+            <td>
+                
+                    <a class="copy_data" href="index.html" data-form="/copydata/8274/" title="Details">
+                        6089.5
+                    </a>
+                
+                
+            </td>
+            <td>
+                <a class="copy_data copy_data_6089.5" href="index.html" data-form="/copydata/8274/" title="Details">
+                    Legislative Library of British Columbia
+                </a>
+            </td>
+            <td>
+                
+                    <a class="copy_data" href="index.html" data-form="/copydata/8274/" title="Details">
+                        MV 822.33 1632
+                    </a>
+                
+            </td>
+            <td>
+                
+                      <span title="This existence of this copy at the location has been verified." class="verified-symbol">✓</span>
+                
+            </td>
+            <td>
+                
+            </td>
+            <td>
+                
+                    <span class="unicode-icon" title="Link to digital facsimile of this copy">
+                        <a href="https://vault.library.uvic.ca/concern/generic_works/c1e462c1-6d9a-46b6-9c53-6d81ee6d6bd1" target="_blank">
+                        <i class="fas fa-camera-retro"></i>
+                        </a>
+                    </span>
+                
+            </td>
+        </tr>
+        
+        <tr>
+            <td>
+                
+                    <a class="copy_data" href="index.html" data-form="/copydata/8123/" title="Details">
+                        6090
+                    </a>
+                
+                
+            </td>
+            <td>
+                <a class="copy_data copy_data_6090" href="index.html" data-form="/copydata/8123/" title="Details">
+                    Meisei University, Kodama Memorial Library
+                </a>
+            </td>
+            <td>
+                
+                    <a class="copy_data" href="index.html" data-form="/copydata/8123/" title="Details">
+                        F2-07 MR 0792
+                    </a>
+                
+            </td>
+            <td>
+                
+                      <span title="This existence of this copy at the location has been verified." class="verified-symbol">✓</span>
+                
+            </td>
+            <td>
+                
+            </td>
+            <td>
+                
+            </td>
+        </tr>
+        
+        <tr>
+            <td>
+                
+                    <a class="copy_data" href="index.html" data-form="/copydata/8124/" title="Details">
+                        6091
+                    </a>
+                
+                
+            </td>
+            <td>
+                <a class="copy_data copy_data_6091" href="index.html" data-form="/copydata/8124/" title="Details">
+                    Meisei University, Kodama Memorial Library
+                </a>
+            </td>
+            <td>
+                
+                    <a class="copy_data" href="index.html" data-form="/copydata/8124/" title="Details">
+                        F2-08 MR 0906
+                    </a>
+                
+            </td>
+            <td>
+                
+                      <span title="This existence of this copy at the location has been verified." class="verified-symbol">✓</span>
+                
+            </td>
+            <td>
+                
+            </td>
+            <td>
+                
+            </td>
+        </tr>
+        
+        <tr>
+            <td>
+                
+                    <a class="copy_data" href="index.html" data-form="/copydata/8125/" title="Details">
+                        6092
+                    </a>
+                
+                
+            </td>
+            <td>
+                <a class="copy_data copy_data_6092" href="index.html" data-form="/copydata/8125/" title="Details">
+                    Meisei University, Kodama Memorial Library
+                </a>
+            </td>
+            <td>
+                
+                    <a class="copy_data" href="index.html" data-form="/copydata/8125/" title="Details">
+                        F2-12 MR 1446
+                    </a>
+                
+            </td>
+            <td>
+                
+                      <span title="This existence of this copy at the location has been verified." class="verified-symbol">✓</span>
+                
+            </td>
+            <td>
+                
+            </td>
+            <td>
+                
+            </td>
+        </tr>
+        
+        <tr>
+            <td>
+                
+                    <a class="copy_data" href="index.html" data-form="/copydata/8126/" title="Details">
+                        6093
+                    </a>
+                
+                
+            </td>
+            <td>
+                <a class="copy_data copy_data_6093" href="index.html" data-form="/copydata/8126/" title="Details">
+                    Meisei University, Kodama Memorial Library
+                </a>
+            </td>
+            <td>
+                
+                    <a class="copy_data" href="index.html" data-form="/copydata/8126/" title="Details">
+                        F2-13 MR 1917
+                    </a>
+                
+            </td>
+            <td>
+                
+                      <span title="This existence of this copy at the location has been verified." class="verified-symbol">✓</span>
+                
+            </td>
+            <td>
+                
+            </td>
+            <td>
+                
+            </td>
+        </tr>
+        
+        <tr>
+            <td>
+                
+                    <a class="copy_data" href="index.html" data-form="/copydata/8127/" title="Details">
+                        6094
+                    </a>
+                
+                
+            </td>
+            <td>
+                <a class="copy_data copy_data_6094" href="index.html" data-form="/copydata/8127/" title="Details">
+                    Meisei University, Kodama Memorial Library
+                </a>
+            </td>
+            <td>
+                
+                    <a class="copy_data" href="index.html" data-form="/copydata/8127/" title="Details">
+                        F2-14 MR 1937
+                    </a>
+                
+            </td>
+            <td>
+                
+                      <span title="This existence of this copy at the location has been verified." class="verified-symbol">✓</span>
+                
+            </td>
+            <td>
+                
+            </td>
+            <td>
+                
+            </td>
+        </tr>
+        
+        <tr>
+            <td>
+                
+                    <a class="copy_data" href="index.html" data-form="/copydata/8083/" title="Details">
+                        6095
+                    </a>
+                
+                
+            </td>
+            <td>
+                <a class="copy_data copy_data_6095" href="index.html" data-form="/copydata/8083/" title="Details">
+                    Meisei University, Kodama Memorial Library
+                </a>
+            </td>
+            <td>
+                
+                    <a class="copy_data" href="index.html" data-form="/copydata/8083/" title="Details">
+                        F2-16 MR 1964
+                    </a>
+                
+            </td>
+            <td>
+                
+                      <span title="This existence of this copy at the location has been verified." class="verified-symbol">✓</span>
+                
+            </td>
+            <td>
+                
+            </td>
+            <td>
+                
+                    <span class="unicode-icon" title="Link to digital facsimile of this copy">
+                        <a href="http://shakes.meisei-u.ac.jp/mr1964E100.html" target="_blank">
+                        <i class="fas fa-camera-retro"></i>
+                        </a>
+                    </span>
+                
+            </td>
+        </tr>
+        
+        <tr>
+            <td>
+                
+                    <a class="copy_data" href="index.html" data-form="/copydata/8084/" title="Details">
+                        6097
+                    </a>
+                
+                
+            </td>
+            <td>
+                <a class="copy_data copy_data_6097" href="index.html" data-form="/copydata/8084/" title="Details">
+                    Meisei University, Kodama Memorial Library
+                </a>
+            </td>
+            <td>
+                
+                    <a class="copy_data" href="index.html" data-form="/copydata/8084/" title="Details">
+                        F2-17 MR 3383
+                    </a>
+                
+            </td>
+            <td>
+                
+                      <span title="This existence of this copy at the location has been verified." class="verified-symbol">✓</span>
+                
+            </td>
+            <td>
+                
+            </td>
+            <td>
+                
+            </td>
+        </tr>
+        
+        <tr>
+            <td>
+                
+                    <a class="copy_data" href="index.html" data-form="/copydata/8085/" title="Details">
+                        6096
+                    </a>
+                
+                
+            </td>
+            <td>
+                <a class="copy_data copy_data_6096" href="index.html" data-form="/copydata/8085/" title="Details">
+                    Meisei University, Kodama Memorial Library
+                </a>
+            </td>
+            <td>
+                
+                    <a class="copy_data" href="index.html" data-form="/copydata/8085/" title="Details">
+                        F2-18 MR 3232
+                    </a>
+                
+            </td>
+            <td>
+                
+                      <span title="This existence of this copy at the location has been verified." class="verified-symbol">✓</span>
+                
+            </td>
+            <td>
+                
+            </td>
+            <td>
+                
+            </td>
+        </tr>
+        
+        <tr>
+            <td>
+                
+                    <a class="copy_data" href="index.html" data-form="/copydata/8086/" title="Details">
+                        6098
+                    </a>
+                
+                
+            </td>
+            <td>
+                <a class="copy_data copy_data_6098" href="index.html" data-form="/copydata/8086/" title="Details">
+                    Meisei University, Kodama Memorial Library
+                </a>
+            </td>
+            <td>
+                
+                    <a class="copy_data" href="index.html" data-form="/copydata/8086/" title="Details">
+                        F2-20 MR 3485
+                    </a>
+                
+            </td>
+            <td>
+                
+                      <span title="This existence of this copy at the location has been verified." class="verified-symbol">✓</span>
+                
+            </td>
+            <td>
+                
+            </td>
+            <td>
+                
+            </td>
+        </tr>
+        
+        <tr>
+            <td>
+                
+                    <a class="copy_data" href="index.html" data-form="/copydata/8087/" title="Details">
+                        6099
+                    </a>
+                
+                
+            </td>
+            <td>
+                <a class="copy_data copy_data_6099" href="index.html" data-form="/copydata/8087/" title="Details">
+                    Meisei University, Kodama Memorial Library
+                </a>
+            </td>
+            <td>
+                
+                    <a class="copy_data" href="index.html" data-form="/copydata/8087/" title="Details">
+                        F2-21 MR 3571
+                    </a>
+                
+            </td>
+            <td>
+                
+                      <span title="This existence of this copy at the location has been verified." class="verified-symbol">✓</span>
+                
+            </td>
+            <td>
+                
+            </td>
+            <td>
+                
+                    <span class="unicode-icon" title="Link to digital facsimile of this copy">
+                        <a href="http://shakes.meisei-u.ac.jp/2search.html" target="_blank">
+                        <i class="fas fa-camera-retro"></i>
+                        </a>
+                    </span>
+                
+            </td>
+        </tr>
+        
+        <tr>
+            <td>
+                
+                    <a class="copy_data" href="index.html" data-form="/copydata/7364/" title="Details">
+                        6100
+                    </a>
+                
+                
+            </td>
+            <td>
+                <a class="copy_data copy_data_6100" href="index.html" data-form="/copydata/7364/" title="Details">
+                    Morgan Library &amp; Museum
+                </a>
+            </td>
+            <td>
+                
+                    <a class="copy_data" href="index.html" data-form="/copydata/7364/" title="Details">
+                        PML 5127
+                    </a>
+                
+            </td>
+            <td>
+                
+                      <span title="This existence of this copy at the location has been verified." class="verified-symbol">✓</span>
+                
+            </td>
+            <td>
+                
+            </td>
+            <td>
+                
+            </td>
+        </tr>
+        
+        <tr>
+            <td>
+                
+                    <a class="copy_data" href="index.html" data-form="/copydata/6944/" title="Details">
+                        6029
+                    </a>
+                
+                
+            </td>
+            <td>
+                <a class="copy_data copy_data_6029" href="index.html" data-form="/copydata/6944/" title="Details">
+                    New York Public Library
+                </a>
+            </td>
+            <td>
+                
+                    <a class="copy_data" href="index.html" data-form="/copydata/6944/" title="Details">
+                        *KC+ 1632 (Copy 2)
+                    </a>
+                
+            </td>
+            <td>
+                
+                      <span title="This existence of this copy at the location has been verified." class="verified-symbol">✓</span>
+                
+            </td>
+            <td>
+                
+            </td>
+            <td>
+                
+            </td>
+        </tr>
+        
+        <tr>
+            <td>
+                
+                    <a class="copy_data" href="index.html" data-form="/copydata/7229/" title="Details">
+                        6101
+                    </a>
+                
+                
+            </td>
+            <td>
+                <a class="copy_data copy_data_6101" href="index.html" data-form="/copydata/7229/" title="Details">
+                    New York Public Library
+                </a>
+            </td>
+            <td>
+                
+                    <a class="copy_data" href="index.html" data-form="/copydata/7229/" title="Details">
+                        *KC+ 1632 (Copy 5)
+                    </a>
+                
+            </td>
+            <td>
+                
+                      <span title="This existence of this copy at the location has been verified." class="verified-symbol">✓</span>
+                
+            </td>
+            <td>
+                
+            </td>
+            <td>
+                
+            </td>
+        </tr>
+        
+        <tr>
+            <td>
+                
+                    <a class="copy_data" href="index.html" data-form="/copydata/7230/" title="Details">
+                        6102
+                    </a>
+                
+                
+            </td>
+            <td>
+                <a class="copy_data copy_data_6102" href="index.html" data-form="/copydata/7230/" title="Details">
+                    New York Public Library
+                </a>
+            </td>
+            <td>
+                
+                    <a class="copy_data" href="index.html" data-form="/copydata/7230/" title="Details">
+                        *KC+ 1632 (Copy 6)
+                    </a>
+                
+            </td>
+            <td>
+                
+                      <span title="This existence of this copy at the location has been verified." class="verified-symbol">✓</span>
+                
+            </td>
+            <td>
+                
+            </td>
+            <td>
+                
+            </td>
+        </tr>
+        
+        <tr>
+            <td>
+                
+                    <a class="copy_data" href="index.html" data-form="/copydata/7534/" title="Details">
+                        6103
+                    </a>
+                
+                
+            </td>
+            <td>
+                <a class="copy_data copy_data_6103" href="index.html" data-form="/copydata/7534/" title="Details">
+                    New York Public Library, Berg Collection
+                </a>
+            </td>
+            <td>
+                
+                    <a class="copy_data" href="index.html" data-form="/copydata/7534/" title="Details">
+                        Berg Coll. +Shakespeare 1632 copy 1
+                    </a>
+                
+            </td>
+            <td>
+                
+                      <span title="This existence of this copy at the location has been verified." class="verified-symbol">✓</span>
+                
+            </td>
+            <td>
+                
+            </td>
+            <td>
+                
+            </td>
+        </tr>
+        
+        <tr>
+            <td>
+                
+                    <a class="copy_data" href="index.html" data-form="/copydata/6954/" title="Details">
+                        6104
+                    </a>
+                
+                
+            </td>
+            <td>
+                <a class="copy_data copy_data_6104" href="index.html" data-form="/copydata/6954/" title="Details">
+                    Newberry Library
+                </a>
+            </td>
+            <td>
+                
+                    <a class="copy_data" href="index.html" data-form="/copydata/6954/" title="Details">
+                        Case folio PR2751 .A2
+                    </a>
+                
+            </td>
+            <td>
+                
+                      <span title="This existence of this copy at the location has been verified." class="verified-symbol">✓</span>
+                
+            </td>
+            <td>
+                
+            </td>
+            <td>
+                
+            </td>
+        </tr>
+        
+        <tr>
+            <td>
+                
+                    <a class="copy_data" href="index.html" data-form="/copydata/6988/" title="Details">
+                        6171
+                    </a>
+                
+                
+            </td>
+            <td>
+                <a class="copy_data copy_data_6171" href="index.html" data-form="/copydata/6988/" title="Details">
+                    Newberry Library
+                </a>
+            </td>
+            <td>
+                
+                    <a class="copy_data" href="index.html" data-form="/copydata/6988/" title="Details">
+                        Case folio YS 02
+                    </a>
+                
+            </td>
+            <td>
+                
+                      <span title="This existence of this copy at the location has been verified." class="verified-symbol">✓</span>
+                
+            </td>
+            <td>
+                
+            </td>
+            <td>
+                
+            </td>
+        </tr>
+        
+        <tr>
+            <td>
+                
+                    <a class="copy_data" href="index.html" data-form="/copydata/6869/" title="Details">
+                        6105
+                    </a>
+                
+                
+            </td>
+            <td>
+                <a class="copy_data copy_data_6105" href="index.html" data-form="/copydata/6869/" title="Details">
+                    Oxford University, Corpus Christi College
+                </a>
+            </td>
+            <td>
+                
+                    <a class="copy_data" href="index.html" data-form="/copydata/6869/" title="Details">
+                        phi.F.3.8
+                    </a>
+                
+            </td>
+            <td>
+                
+                      <span title="This existence of this copy at the location has been verified." class="verified-symbol">✓</span>
+                
+            </td>
+            <td>
+                
+            </td>
+            <td>
+                
+            </td>
+        </tr>
+        
+        <tr>
+            <td>
+                
+                    <a class="copy_data" href="index.html" data-form="/copydata/6870/" title="Details">
+                        6106
+                    </a>
+                
+                
+            </td>
+            <td>
+                <a class="copy_data copy_data_6106" href="index.html" data-form="/copydata/6870/" title="Details">
+                    Oxford University, Exeter College
+                </a>
+            </td>
+            <td>
+                
+                    &nbsp;
+                
+            </td>
+            <td>
+                
+                      <span title="This existence of this copy at the location has been verified." class="verified-symbol">✓</span>
+                
+            </td>
+            <td>
+                
+            </td>
+            <td>
+                
+            </td>
+        </tr>
+        
+        <tr>
+            <td>
+                
+                    <a class="copy_data" href="index.html" data-form="/copydata/8081/" title="Details">
+                        6107
+                    </a>
+                
+                
+            </td>
+            <td>
+                <a class="copy_data copy_data_6107" href="index.html" data-form="/copydata/8081/" title="Details">
+                    Oxford University, Jesus College
+                </a>
+            </td>
+            <td>
+                
+                    <a class="copy_data" href="index.html" data-form="/copydata/8081/" title="Details">
+                        I Arch.3.18
+                    </a>
+                
+            </td>
+            <td>
+                
+                      <span title="This existence of this copy at the location has been verified." class="verified-symbol">✓</span>
+                
+            </td>
+            <td>
+                
+            </td>
+            <td>
+                
+            </td>
+        </tr>
+        
+        <tr>
+            <td>
+                
+                    <a class="copy_data" href="index.html" data-form="/copydata/6873/" title="Details">
+                        6108
+                    </a>
+                
+                
+            </td>
+            <td>
+                <a class="copy_data copy_data_6108" href="index.html" data-form="/copydata/6873/" title="Details">
+                    Oxford University, Lincoln College
+                </a>
+            </td>
+            <td>
+                
+                    <a class="copy_data" href="index.html" data-form="/copydata/6873/" title="Details">
+                        L.4.14 SR O.15
+                    </a>
+                
+            </td>
+            <td>
+                
+                      <span title="This existence of this copy at the location has been verified." class="verified-symbol">✓</span>
+                
+            </td>
+            <td>
+                
+            </td>
+            <td>
+                
+            </td>
+        </tr>
+        
+        <tr>
+            <td>
+                
+                    <a class="copy_data" href="index.html" data-form="/copydata/6874/" title="Details">
+                        6109
+                    </a>
+                
+                
+            </td>
+            <td>
+                <a class="copy_data copy_data_6109" href="index.html" data-form="/copydata/6874/" title="Details">
+                    Oxford University, Merton College
+                </a>
+            </td>
+            <td>
+                
+                    <a class="copy_data" href="index.html" data-form="/copydata/6874/" title="Details">
+                        119.F.10
+                    </a>
+                
+            </td>
+            <td>
+                
+                      <span title="This existence of this copy at the location has been verified." class="verified-symbol">✓</span>
+                
+            </td>
+            <td>
+                
+            </td>
+            <td>
+                
+            </td>
+        </tr>
+        
+        <tr>
+            <td>
+                
+                    <a class="copy_data" href="index.html" data-form="/copydata/7398/" title="Details">
+                        6110
+                    </a>
+                
+                
+            </td>
+            <td>
+                <a class="copy_data copy_data_6110" href="index.html" data-form="/copydata/7398/" title="Details">
+                    Oxford University, Wadham College
+                </a>
+            </td>
+            <td>
+                
+                    <a class="copy_data" href="index.html" data-form="/copydata/7398/" title="Details">
+                        A70000002440
+                    </a>
+                
+            </td>
+            <td>
+                
+                      <span title="This existence of this copy at the location has been verified." class="verified-symbol">✓</span>
+                
+            </td>
+            <td>
+                
+            </td>
+            <td>
+                
+            </td>
+        </tr>
+        
+        <tr>
+            <td>
+                
+                    <a class="copy_data" href="index.html" data-form="/copydata/6974/" title="Details">
+                        6111
+                    </a>
+                
+                
+            </td>
+            <td>
+                <a class="copy_data copy_data_6111" href="index.html" data-form="/copydata/6974/" title="Details">
+                    Penn State University
+                </a>
+            </td>
+            <td>
+                
+                    <a class="copy_data" href="index.html" data-form="/copydata/6974/" title="Details">
+                        PR2751.A2 1632 Q
+                    </a>
+                
+            </td>
+            <td>
+                
+                      <span title="This existence of this copy at the location has been verified." class="verified-symbol">✓</span>
+                
+            </td>
+            <td>
+                
+            </td>
+            <td>
+                
+            </td>
+        </tr>
+        
+        <tr>
+            <td>
+                
+                    <a class="copy_data" href="index.html" data-form="/copydata/7355/" title="Details">
+                        6112
+                    </a>
+                
+                
+            </td>
+            <td>
+                <a class="copy_data copy_data_6112" href="index.html" data-form="/copydata/7355/" title="Details">
+                    Pequot Library, Southport, CT
+                </a>
+            </td>
+            <td>
+                
+                    <a class="copy_data" href="index.html" data-form="/copydata/7355/" title="Details">
+                        19958
+                    </a>
+                
+            </td>
+            <td>
+                
+                      <span title="This existence of this copy at the location has been verified." class="verified-symbol">✓</span>
+                
+            </td>
+            <td>
+                
+            </td>
+            <td>
+                
+            </td>
+        </tr>
+        
+        <tr>
+            <td>
+                
+                    <a class="copy_data" href="index.html" data-form="/copydata/7550/" title="Details">
+                        6113
+                    </a>
+                
+                
+            </td>
+            <td>
+                <a class="copy_data copy_data_6113" href="index.html" data-form="/copydata/7550/" title="Details">
+                    Phillips Exeter Academy
+                </a>
+            </td>
+            <td>
+                
+                    <a class="copy_data" href="index.html" data-form="/copydata/7550/" title="Details">
+                        822 S527, J, 1632 Vault
+                    </a>
+                
+            </td>
+            <td>
+                
+                      <span title="The existence of this copy has not been verified; location entered by an administrator." class="unverified-symbol">⃠</span>
+                
+            </td>
+            <td>
+                
+            </td>
+            <td>
+                
+            </td>
+        </tr>
+        
+        <tr>
+            <td>
+                
+                    <a class="copy_data" href="index.html" data-form="/copydata/7328/" title="Details">
+                        6114
+                    </a>
+                
+                
+            </td>
+            <td>
+                <a class="copy_data copy_data_6114" href="index.html" data-form="/copydata/7328/" title="Details">
+                    Phoenix Public Library
+                </a>
+            </td>
+            <td>
+                
+                    <a class="copy_data" href="index.html" data-form="/copydata/7328/" title="Details">
+                        822.33 ISh15m 1632
+                    </a>
+                
+            </td>
+            <td>
+                
+                      <span title="This existence of this copy at the location has been verified." class="verified-symbol">✓</span>
+                
+            </td>
+            <td>
+                
+            </td>
+            <td>
+                
+            </td>
+        </tr>
+        
+        <tr>
+            <td>
+                
+                    <a class="copy_data" href="index.html" data-form="/copydata/7306/" title="Details">
+                        6115
+                    </a>
+                
+                
+            </td>
+            <td>
+                <a class="copy_data copy_data_6115" href="index.html" data-form="/copydata/7306/" title="Details">
+                    Princeton University
+                </a>
+            </td>
+            <td>
+                
+                    <a class="copy_data" href="index.html" data-form="/copydata/7306/" title="Details">
+                        31.11
+                    </a>
+                
+            </td>
+            <td>
+                
+                      <span title="The existence of this copy has not been verified; location entered by an administrator." class="unverified-symbol">⃠</span>
+                
+            </td>
+            <td>
+                
+            </td>
+            <td>
+                
+            </td>
+        </tr>
+        
+        <tr>
+            <td>
+                
+                    <a class="copy_data" href="index.html" data-form="/copydata/6968/" title="Details">
+                        6116
+                    </a>
+                
+                
+            </td>
+            <td>
+                <a class="copy_data copy_data_6116" href="index.html" data-form="/copydata/6968/" title="Details">
+                    Princeton University
+                </a>
+            </td>
+            <td>
+                
+                    <a class="copy_data" href="index.html" data-form="/copydata/6968/" title="Details">
+                        EXKA Oversize Special 1632q Shakespeare
+                    </a>
+                
+            </td>
+            <td>
+                
+                      <span title="The existence of this copy has not been verified; location entered by an administrator." class="unverified-symbol">⃠</span>
+                
+            </td>
+            <td>
+                
+            </td>
+            <td>
+                
+            </td>
+        </tr>
+        
+        <tr>
+            <td>
+                
+                    <a class="copy_data" href="index.html" data-form="/copydata/8340/" title="Details">
+                        6116.3
+                    </a>
+                
+                
+            </td>
+            <td>
+                <a class="copy_data copy_data_6116.3" href="index.html" data-form="/copydata/8340/" title="Details">
+                    Private collection
+                </a>
+            </td>
+            <td>
+                
+                    <a class="copy_data" href="index.html" data-form="/copydata/8340/" title="Details">
+                        [none]
+                    </a>
+                
+            </td>
+            <td>
+                
+                      <span title="This existence of this copy at the location has been verified." class="verified-symbol">✓</span>
+                
+            </td>
+            <td>
+                
+            </td>
+            <td>
+                
+            </td>
+        </tr>
+        
+        <tr>
+            <td>
+                
+                    <a class="copy_data" href="index.html" data-form="/copydata/7983/" title="Details">
+                        6117
+                    </a>
+                
+                
+            </td>
+            <td>
+                <a class="copy_data copy_data_6117" href="index.html" data-form="/copydata/7983/" title="Details">
+                    Private collection
+                </a>
+            </td>
+            <td>
+                
+                    <a class="copy_data" href="index.html" data-form="/copydata/7983/" title="Details">
+                        [none]
+                    </a>
+                
+            </td>
+            <td>
+                
+                      <span title="This existence of this copy at the location has been verified." class="verified-symbol">✓</span>
+                
+            </td>
+            <td>
+                
+            </td>
+            <td>
+                
+            </td>
+        </tr>
+        
+        <tr>
+            <td>
+                
+                    <a class="copy_data" href="index.html" data-form="/copydata/7937/" title="Details">
+                        6118
+                    </a>
+                
+                
+            </td>
+            <td>
+                <a class="copy_data copy_data_6118" href="index.html" data-form="/copydata/7937/" title="Details">
+                    Private collection
+                </a>
+            </td>
+            <td>
+                
+                    <a class="copy_data" href="index.html" data-form="/copydata/7937/" title="Details">
+                        [none]
+                    </a>
+                
+            </td>
+            <td>
+                
+                      <span title="This existence of this copy at the location has been verified." class="verified-symbol">✓</span>
+                
+            </td>
+            <td>
+                
+            </td>
+            <td>
+                
+            </td>
+        </tr>
+        
+        <tr>
+            <td>
+                
+                    <a class="copy_data" href="index.html" data-form="/copydata/7943/" title="Details">
+                        6119
+                    </a>
+                
+                
+            </td>
+            <td>
+                <a class="copy_data copy_data_6119" href="index.html" data-form="/copydata/7943/" title="Details">
+                    Private collection
+                </a>
+            </td>
+            <td>
+                
+                    <a class="copy_data" href="index.html" data-form="/copydata/7943/" title="Details">
+                        [none]
+                    </a>
+                
+            </td>
+            <td>
+                
+                      <span title="This existence of this copy at the location has been verified." class="verified-symbol">✓</span>
+                
+            </td>
+            <td>
+                
+            </td>
+            <td>
+                
+            </td>
+        </tr>
+        
+        <tr>
+            <td>
+                
+                    <a class="copy_data" href="index.html" data-form="/copydata/7946/" title="Details">
+                        6120
+                    </a>
+                
+                
+            </td>
+            <td>
+                <a class="copy_data copy_data_6120" href="index.html" data-form="/copydata/7946/" title="Details">
+                    Private collection
+                </a>
+            </td>
+            <td>
+                
+                    <a class="copy_data" href="index.html" data-form="/copydata/7946/" title="Details">
+                        [none]
+                    </a>
+                
+            </td>
+            <td>
+                
+                      <span title="This existence of this copy at the location has been verified." class="verified-symbol">✓</span>
+                
+            </td>
+            <td>
+                
+            </td>
+            <td>
+                
+            </td>
+        </tr>
+        
+        <tr>
+            <td>
+                
+                    <a class="copy_data" href="index.html" data-form="/copydata/7947/" title="Details">
+                        6121
+                    </a>
+                
+                
+            </td>
+            <td>
+                <a class="copy_data copy_data_6121" href="index.html" data-form="/copydata/7947/" title="Details">
+                    Private collection
+                </a>
+            </td>
+            <td>
+                
+                    <a class="copy_data" href="index.html" data-form="/copydata/7947/" title="Details">
+                        [none]
+                    </a>
+                
+            </td>
+            <td>
+                
+                      <span title="This existence of this copy at the location has been verified." class="verified-symbol">✓</span>
+                
+            </td>
+            <td>
+                
+            </td>
+            <td>
+                
+            </td>
+        </tr>
+        
+        <tr>
+            <td>
+                
+                    <a class="copy_data" href="index.html" data-form="/copydata/7948/" title="Details">
+                        6122
+                    </a>
+                
+                
+            </td>
+            <td>
+                <a class="copy_data copy_data_6122" href="index.html" data-form="/copydata/7948/" title="Details">
+                    Private collection
+                </a>
+            </td>
+            <td>
+                
+                    <a class="copy_data" href="index.html" data-form="/copydata/7948/" title="Details">
+                        [none]
+                    </a>
+                
+            </td>
+            <td>
+                
+                      <span title="This existence of this copy at the location has been verified." class="verified-symbol">✓</span>
+                
+            </td>
+            <td>
+                
+            </td>
+            <td>
+                
+            </td>
+        </tr>
+        
+        <tr>
+            <td>
+                
+                    <a class="copy_data" href="index.html" data-form="/copydata/7949/" title="Details">
+                        6123
+                    </a>
+                
+                
+            </td>
+            <td>
+                <a class="copy_data copy_data_6123" href="index.html" data-form="/copydata/7949/" title="Details">
+                    Private collection
+                </a>
+            </td>
+            <td>
+                
+                    <a class="copy_data" href="index.html" data-form="/copydata/7949/" title="Details">
+                        [none]
+                    </a>
+                
+            </td>
+            <td>
+                
+                      <span title="This existence of this copy at the location has been verified." class="verified-symbol">✓</span>
+                
+            </td>
+            <td>
+                
+            </td>
+            <td>
+                
+            </td>
+        </tr>
+        
+        <tr>
+            <td>
+                
+                    <a class="copy_data" href="index.html" data-form="/copydata/7953/" title="Details">
+                        6124
+                    </a>
+                
+                
+            </td>
+            <td>
+                <a class="copy_data copy_data_6124" href="index.html" data-form="/copydata/7953/" title="Details">
+                    Private collection
+                </a>
+            </td>
+            <td>
+                
+                    <a class="copy_data" href="index.html" data-form="/copydata/7953/" title="Details">
+                        [none]
+                    </a>
+                
+            </td>
+            <td>
+                
+                      <span title="This existence of this copy at the location has been verified." class="verified-symbol">✓</span>
+                
+            </td>
+            <td>
+                
+            </td>
+            <td>
+                
+            </td>
+        </tr>
+        
+        <tr>
+            <td>
+                
+                    <a class="copy_data" href="index.html" data-form="/copydata/7956/" title="Details">
+                        6125
+                    </a>
+                
+                
+            </td>
+            <td>
+                <a class="copy_data copy_data_6125" href="index.html" data-form="/copydata/7956/" title="Details">
+                    Private collection
+                </a>
+            </td>
+            <td>
+                
+                    <a class="copy_data" href="index.html" data-form="/copydata/7956/" title="Details">
+                        [none]
+                    </a>
+                
+            </td>
+            <td>
+                
+                      <span title="This existence of this copy at the location has been verified." class="verified-symbol">✓</span>
+                
+            </td>
+            <td>
+                
+            </td>
+            <td>
+                
+            </td>
+        </tr>
+        
+        <tr>
+            <td>
+                
+                    <a class="copy_data" href="index.html" data-form="/copydata/7957/" title="Details">
+                        6126
+                    </a>
+                
+                
+            </td>
+            <td>
+                <a class="copy_data copy_data_6126" href="index.html" data-form="/copydata/7957/" title="Details">
+                    Private collection
+                </a>
+            </td>
+            <td>
+                
+                    <a class="copy_data" href="index.html" data-form="/copydata/7957/" title="Details">
+                        [none]
+                    </a>
+                
+            </td>
+            <td>
+                
+                      <span title="This existence of this copy at the location has been verified." class="verified-symbol">✓</span>
+                
+            </td>
+            <td>
+                
+            </td>
+            <td>
+                
+            </td>
+        </tr>
+        
+        <tr>
+            <td>
+                
+                    <a class="copy_data" href="index.html" data-form="/copydata/7958/" title="Details">
+                        6127
+                    </a>
+                
+                
+            </td>
+            <td>
+                <a class="copy_data copy_data_6127" href="index.html" data-form="/copydata/7958/" title="Details">
+                    Private collection
+                </a>
+            </td>
+            <td>
+                
+                    <a class="copy_data" href="index.html" data-form="/copydata/7958/" title="Details">
+                        [none]
+                    </a>
+                
+            </td>
+            <td>
+                
+                      <span title="This existence of this copy at the location has been verified." class="verified-symbol">✓</span>
+                
+            </td>
+            <td>
+                
+            </td>
+            <td>
+                
+            </td>
+        </tr>
+        
+        <tr>
+            <td>
+                
+                    <a class="copy_data" href="index.html" data-form="/copydata/7971/" title="Details">
+                        6129
+                    </a>
+                
+                
+            </td>
+            <td>
+                <a class="copy_data copy_data_6129" href="index.html" data-form="/copydata/7971/" title="Details">
+                    Private collection
+                </a>
+            </td>
+            <td>
+                
+                    <a class="copy_data" href="index.html" data-form="/copydata/7971/" title="Details">
+                        [none]
+                    </a>
+                
+            </td>
+            <td>
+                
+                      <span title="This existence of this copy at the location has been verified." class="verified-symbol">✓</span>
+                
+            </td>
+            <td>
+                
+            </td>
+            <td>
+                
+            </td>
+        </tr>
+        
+        <tr>
+            <td>
+                
+                    <a class="copy_data" href="index.html" data-form="/copydata/8377/" title="Details">
+                        6116.2
+                    </a>
+                
+                
+            </td>
+            <td>
+                <a class="copy_data copy_data_6116.2" href="index.html" data-form="/copydata/8377/" title="Details">
+                    Private collection (Florida)
+                </a>
+            </td>
+            <td>
+                
+                    <a class="copy_data" href="index.html" data-form="/copydata/8377/" title="Details">
+                        [none]
+                    </a>
+                
+            </td>
+            <td>
+                
+                      <span title="This existence of this copy at the location has been verified." class="verified-symbol">✓</span>
+                
+            </td>
+            <td>
+                
+            </td>
+            <td>
+                
+            </td>
+        </tr>
+        
+        <tr>
+            <td>
+                
+                    <a class="copy_data" href="index.html" data-form="/copydata/8278/" title="Details">
+                        6116.5
+                    </a>
+                
+                
+            </td>
+            <td>
+                <a class="copy_data copy_data_6116.5" href="index.html" data-form="/copydata/8278/" title="Details">
+                    Private collection (Florida)
+                </a>
+            </td>
+            <td>
+                
+                    <a class="copy_data" href="index.html" data-form="/copydata/8278/" title="Details">
+                        [none]
+                    </a>
+                
+            </td>
+            <td>
+                
+                      <span title="This existence of this copy at the location has been verified." class="verified-symbol">✓</span>
+                
+            </td>
+            <td>
+                
+            </td>
+            <td>
+                
+            </td>
+        </tr>
+        
+        <tr>
+            <td>
+                
+                    <a class="copy_data" href="index.html" data-form="/copydata/8397/" title="Details">
+                        6117.3
+                    </a>
+                
+                
+            </td>
+            <td>
+                <a class="copy_data copy_data_6117.3" href="index.html" data-form="/copydata/8397/" title="Details">
+                    Private collection (Florida)
+                </a>
+            </td>
+            <td>
+                
+                    <a class="copy_data" href="index.html" data-form="/copydata/8397/" title="Details">
+                        [none]
+                    </a>
+                
+            </td>
+            <td>
+                
+                      <span title="This existence of this copy at the location has been verified." class="verified-symbol">✓</span>
+                
+            </td>
+            <td>
+                
+            </td>
+            <td>
+                
+            </td>
+        </tr>
+        
+        <tr>
+            <td>
+                
+                    <a class="copy_data" href="index.html" data-form="/copydata/8387/" title="Details">
+                        6117.5
+                    </a>
+                
+                
+            </td>
+            <td>
+                <a class="copy_data copy_data_6117.5" href="index.html" data-form="/copydata/8387/" title="Details">
+                    Private collection (Florida)
+                </a>
+            </td>
+            <td>
+                
+                    <a class="copy_data" href="index.html" data-form="/copydata/8387/" title="Details">
+                        [none]
+                    </a>
+                
+            </td>
+            <td>
+                
+                      <span title="This existence of this copy at the location has been verified." class="verified-symbol">✓</span>
+                
+            </td>
+            <td>
+                
+            </td>
+            <td>
+                
+            </td>
+        </tr>
+        
+        <tr>
+            <td>
+                
+                    <a class="copy_data" href="index.html" data-form="/copydata/7961/" title="Details">
+                        6128
+                    </a>
+                
+                
+            </td>
+            <td>
+                <a class="copy_data copy_data_6128" href="index.html" data-form="/copydata/7961/" title="Details">
+                    Private collection (Florida)
+                </a>
+            </td>
+            <td>
+                
+                    <a class="copy_data" href="index.html" data-form="/copydata/7961/" title="Details">
+                        [none]
+                    </a>
+                
+            </td>
+            <td>
+                
+                      <span title="This existence of this copy at the location has been verified." class="verified-symbol">✓</span>
+                
+            </td>
+            <td>
+                
+            </td>
+            <td>
+                
+            </td>
+        </tr>
+        
+        <tr>
+            <td>
+                
+                    <a class="copy_data" href="index.html" data-form="/copydata/7986/" title="Details">
+                        6130
+                    </a>
+                
+                
+            </td>
+            <td>
+                <a class="copy_data copy_data_6130" href="index.html" data-form="/copydata/7986/" title="Details">
+                    Private collection (Florida)
+                </a>
+            </td>
+            <td>
+                
+                    <a class="copy_data" href="index.html" data-form="/copydata/7986/" title="Details">
+                        [none]
+                    </a>
+                
+            </td>
+            <td>
+                
+                      <span title="This existence of this copy at the location has been verified." class="verified-symbol">✓</span>
+                
+            </td>
+            <td>
+                
+            </td>
+            <td>
+                
+            </td>
+        </tr>
+        
+        <tr>
+            <td>
+                
+                    <a class="copy_data" href="index.html" data-form="/copydata/7968/" title="Details">
+                        6331
+                    </a>
+                
+                
+            </td>
+            <td>
+                <a class="copy_data copy_data_6331" href="index.html" data-form="/copydata/7968/" title="Details">
+                    Private collection (Florida)
+                </a>
+            </td>
+            <td>
+                
+                    <a class="copy_data" href="index.html" data-form="/copydata/7968/" title="Details">
+                        [none]
+                    </a>
+                
+            </td>
+            <td>
+                
+                      <span title="This existence of this copy at the location has been verified." class="verified-symbol">✓</span>
+                
+            </td>
+            <td>
+                
+            </td>
+            <td>
+                
+            </td>
+        </tr>
+        
+        <tr>
+            <td>
+                
+                    <a class="copy_data" href="index.html" data-form="/copydata/6965/" title="Details">
+                        6131
+                    </a>
+                
+                
+            </td>
+            <td>
+                <a class="copy_data copy_data_6131" href="index.html" data-form="/copydata/6965/" title="Details">
+                    Rutgers University
+                </a>
+            </td>
+            <td>
+                
+                    <a class="copy_data" href="index.html" data-form="/copydata/6965/" title="Details">
+                        Oversized Rare Books PR2751.A2 1632
+                    </a>
+                
+            </td>
+            <td>
+                
+                      <span title="The existence of this copy has not been verified; location entered by an administrator." class="unverified-symbol">⃠</span>
+                
+            </td>
+            <td>
+                
+            </td>
+            <td>
+                
+            </td>
+        </tr>
+        
+        <tr>
+            <td>
+                
+                    <a class="copy_data" href="index.html" data-form="/copydata/7228/" title="Details">
+                        6132
+                    </a>
+                
+                
+            </td>
+            <td>
+                <a class="copy_data copy_data_6132" href="index.html" data-form="/copydata/7228/" title="Details">
+                    Senate House Library, University of London
+                </a>
+            </td>
+            <td>
+                
+                    <a class="copy_data" href="index.html" data-form="/copydata/7228/" title="Details">
+                        [S.L.] I [Shakespeare - 1632] fol. (S) copy 2
+                    </a>
+                
+            </td>
+            <td>
+                
+                      <span title="This existence of this copy at the location has been verified." class="verified-symbol">✓</span>
+                
+            </td>
+            <td>
+                
+            </td>
+            <td>
+                
+            </td>
+        </tr>
+        
+        <tr>
+            <td>
+                
+                    <a class="copy_data" href="index.html" data-form="/copydata/6978/" title="Details">
+                        6133
+                    </a>
+                
+                
+            </td>
+            <td>
+                <a class="copy_data copy_data_6133" href="index.html" data-form="/copydata/6978/" title="Details">
+                    Shakespeare Birthplace Trust
+                </a>
+            </td>
+            <td>
+                
+                    <a class="copy_data" href="index.html" data-form="/copydata/6978/" title="Details">
+                        SR/OS/37 Copy 1: (SBT 3) Accession #: 83000038
+                    </a>
+                
+            </td>
+            <td>
+                
+                      <span title="The existence of this copy has not been verified; location derived from ESTC." class="unverified-symbol">⃠</span>
+                
+            </td>
+            <td>
+                
+            </td>
+            <td>
+                
+            </td>
+        </tr>
+        
+        <tr>
+            <td>
+                
+                    <a class="copy_data" href="index.html" data-form="/copydata/6979/" title="Details">
+                        6134
+                    </a>
+                
+                
+            </td>
+            <td>
+                <a class="copy_data copy_data_6134" href="index.html" data-form="/copydata/6979/" title="Details">
+                    Shakespeare Birthplace Trust
+                </a>
+            </td>
+            <td>
+                
+                    <a class="copy_data" href="index.html" data-form="/copydata/6979/" title="Details">
+                        SR/OS/37 Copy 2: (SBT 4) Accession #: 83000046
+                    </a>
+                
+            </td>
+            <td>
+                
+                      <span title="The existence of this copy has not been verified; location derived from ESTC." class="unverified-symbol">⃠</span>
+                
+            </td>
+            <td>
+                
+            </td>
+            <td>
+                
+            </td>
+        </tr>
+        
+        <tr>
+            <td>
+                
+                    <a class="copy_data" href="index.html" data-form="/copydata/6980/" title="Details">
+                        6135
+                    </a>
+                
+                
+            </td>
+            <td>
+                <a class="copy_data copy_data_6135" href="index.html" data-form="/copydata/6980/" title="Details">
+                    Shakespeare Birthplace Trust
+                </a>
+            </td>
+            <td>
+                
+                    <a class="copy_data" href="index.html" data-form="/copydata/6980/" title="Details">
+                        SR/OS/37 Copy 3: (RSC 2) Accession #: 08100020
+                    </a>
+                
+            </td>
+            <td>
+                
+                      <span title="The existence of this copy has not been verified; location derived from ESTC." class="unverified-symbol">⃠</span>
+                
+            </td>
+            <td>
+                
+            </td>
+            <td>
+                
+            </td>
+        </tr>
+        
+        <tr>
+            <td>
+                
+                    <a class="copy_data" href="index.html" data-form="/copydata/6981/" title="Details">
+                        6136
+                    </a>
+                
+                
+            </td>
+            <td>
+                <a class="copy_data copy_data_6136" href="index.html" data-form="/copydata/6981/" title="Details">
+                    Shakespeare Birthplace Trust
+                </a>
+            </td>
+            <td>
+                
+                    <a class="copy_data" href="index.html" data-form="/copydata/6981/" title="Details">
+                        SR/OS/37 Copy 4: (SML 7205) Accession #: 81072058
+                    </a>
+                
+            </td>
+            <td>
+                
+                      <span title="The existence of this copy has not been verified; location derived from ESTC." class="unverified-symbol">⃠</span>
+                
+            </td>
+            <td>
+                
+            </td>
+            <td>
+                
+            </td>
+        </tr>
+        
+        <tr>
+            <td>
+                
+                    <a class="copy_data" href="index.html" data-form="/copydata/6955/" title="Details">
+                        6137
+                    </a>
+                
+                
+            </td>
+            <td>
+                <a class="copy_data copy_data_6137" href="index.html" data-form="/copydata/6955/" title="Details">
+                    Texas Christian University
+                </a>
+            </td>
+            <td>
+                
+                    <a class="copy_data" href="index.html" data-form="/copydata/6955/" title="Details">
+                        Lewis PR2751 .A2 1632
+                    </a>
+                
+            </td>
+            <td>
+                
+                      <span title="The existence of this copy has not been verified; location derived from ESTC." class="unverified-symbol">⃠</span>
+                
+            </td>
+            <td>
+                
+            </td>
+            <td>
+                
+            </td>
+        </tr>
+        
+        <tr>
+            <td>
+                
+                    <a class="copy_data" href="index.html" data-form="/copydata/7607/" title="Details">
+                        6138
+                    </a>
+                
+                
+            </td>
+            <td>
+                <a class="copy_data copy_data_6138" href="index.html" data-form="/copydata/7607/" title="Details">
+                    US Library of Congress
+                </a>
+            </td>
+            <td>
+                
+                    <a class="copy_data" href="index.html" data-form="/copydata/7607/" title="Details">
+                        PR2751 .A2 1632 copy 1
+                    </a>
+                
+            </td>
+            <td>
+                
+                      <span title="This existence of this copy at the location has been verified." class="verified-symbol">✓</span>
+                
+            </td>
+            <td>
+                
+            </td>
+            <td>
+                
+            </td>
+        </tr>
+        
+        <tr>
+            <td>
+                
+                    <a class="copy_data" href="index.html" data-form="/copydata/6888/" title="Details">
+                        6139
+                    </a>
+                
+                
+            </td>
+            <td>
+                <a class="copy_data copy_data_6139" href="index.html" data-form="/copydata/6888/" title="Details">
+                    University of Akron
+                </a>
+            </td>
+            <td>
+                
+                    <a class="copy_data" href="index.html" data-form="/copydata/6888/" title="Details">
+                        Rare Vault PR2751 .A2 1632
+                    </a>
+                
+            </td>
+            <td>
+                
+                      <span title="This existence of this copy at the location has been verified." class="verified-symbol">✓</span>
+                
+            </td>
+            <td>
+                
+            </td>
+            <td>
+                
+            </td>
+        </tr>
+        
+        <tr>
+            <td>
+                
+                    <a class="copy_data" href="index.html" data-form="/copydata/7386/" title="Details">
+                        6140
+                    </a>
+                
+                
+            </td>
+            <td>
+                <a class="copy_data copy_data_6140" href="index.html" data-form="/copydata/7386/" title="Details">
+                    University of Basel
+                </a>
+            </td>
+            <td>
+                
+                    <a class="copy_data" href="index.html" data-form="/copydata/7386/" title="Details">
+                        Frey-Gryn N I 19
+                    </a>
+                
+            </td>
+            <td>
+                
+                      <span title="This existence of this copy at the location has been verified." class="verified-symbol">✓</span>
+                
+            </td>
+            <td>
+                
+            </td>
+            <td>
+                
+            </td>
+        </tr>
+        
+        <tr>
+            <td>
+                
+                    <a class="copy_data" href="index.html" data-form="/copydata/6960/" title="Details">
+                        6141
+                    </a>
+                
+                
+            </td>
+            <td>
+                <a class="copy_data copy_data_6141" href="index.html" data-form="/copydata/6960/" title="Details">
+                    University of British Colubmia
+                </a>
+            </td>
+            <td>
+                
+                    <a class="copy_data" href="index.html" data-form="/copydata/6960/" title="Details">
+                        PR2751 .A2 1632
+                    </a>
+                
+            </td>
+            <td>
+                
+                      <span title="This existence of this copy at the location has been verified." class="verified-symbol">✓</span>
+                
+            </td>
+            <td>
+                
+            </td>
+            <td>
+                
+            </td>
+        </tr>
+        
+        <tr>
+            <td>
+                
+                    <a class="copy_data" href="index.html" data-form="/copydata/7366/" title="Details">
+                        6142
+                    </a>
+                
+                
+            </td>
+            <td>
+                <a class="copy_data copy_data_6142" href="index.html" data-form="/copydata/7366/" title="Details">
+                    University of California, Davis
+                </a>
+            </td>
+            <td>
+                
+                    <a class="copy_data" href="index.html" data-form="/copydata/7366/" title="Details">
+                        PR2751 .A2
+                    </a>
+                
+            </td>
+            <td>
+                
+                      <span title="This existence of this copy at the location has been verified." class="verified-symbol">✓</span>
+                
+            </td>
+            <td>
+                
+            </td>
+            <td>
+                
+            </td>
+        </tr>
+        
+        <tr>
+            <td>
+                
+                    <a class="copy_data" href="index.html" data-form="/copydata/6959/" title="Details">
+                        6143
+                    </a>
+                
+                
+            </td>
+            <td>
+                <a class="copy_data copy_data_6143" href="index.html" data-form="/copydata/6959/" title="Details">
+                    University of California, Los Angeles, Clark Library
+                </a>
+            </td>
+            <td>
+                
+                    <a class="copy_data" href="index.html" data-form="/copydata/6959/" title="Details">
+                        f PR2751.A2 A4a
+                    </a>
+                
+            </td>
+            <td>
+                
+                      <span title="This existence of this copy at the location has been verified." class="verified-symbol">✓</span>
+                
+            </td>
+            <td>
+                
+            </td>
+            <td>
+                
+            </td>
+        </tr>
+        
+        <tr>
+            <td>
+                
+                    <a class="copy_data" href="index.html" data-form="/copydata/6976/" title="Details">
+                        6144
+                    </a>
+                
+                
+            </td>
+            <td>
+                <a class="copy_data copy_data_6144" href="index.html" data-form="/copydata/6976/" title="Details">
+                    University of Glasgow
+                </a>
+            </td>
+            <td>
+                
+                    <a class="copy_data" href="index.html" data-form="/copydata/6976/" title="Details">
+                        Sp Coll Hunterian Dr.2.3
+                    </a>
+                
+            </td>
+            <td>
+                
+                      <span title="This existence of this copy at the location has been verified." class="verified-symbol">✓</span>
+                
+            </td>
+            <td>
+                
+            </td>
+            <td>
+                
+            </td>
+        </tr>
+        
+        <tr>
+            <td>
+                
+                    <a class="copy_data" href="index.html" data-form="/copydata/7357/" title="Details">
+                        6145
+                    </a>
+                
+                
+            </td>
+            <td>
+                <a class="copy_data copy_data_6145" href="index.html" data-form="/copydata/7357/" title="Details">
+                    University of Illinois, Urbana-Champaign
+                </a>
+            </td>
+            <td>
+                
+                    <a class="copy_data" href="index.html" data-form="/copydata/7357/" title="Details">
+                        IUQ00002
+                    </a>
+                
+            </td>
+            <td>
+                
+                      <span title="This existence of this copy at the location has been verified." class="verified-symbol">✓</span>
+                
+            </td>
+            <td>
+                
+            </td>
+            <td>
+                
+            </td>
+        </tr>
+        
+        <tr>
+            <td>
+                
+                    <a class="copy_data" href="index.html" data-form="/copydata/7358/" title="Details">
+                        6146
+                    </a>
+                
+                
+            </td>
+            <td>
+                <a class="copy_data copy_data_6146" href="index.html" data-form="/copydata/7358/" title="Details">
+                    University of Illinois, Urbana-Champaign
+                </a>
+            </td>
+            <td>
+                
+                    <a class="copy_data" href="index.html" data-form="/copydata/7358/" title="Details">
+                        IUQ00004
+                    </a>
+                
+            </td>
+            <td>
+                
+                      <span title="This existence of this copy at the location has been verified." class="verified-symbol">✓</span>
+                
+            </td>
+            <td>
+                
+            </td>
+            <td>
+                
+            </td>
+        </tr>
+        
+        <tr>
+            <td>
+                
+                    <a class="copy_data" href="index.html" data-form="/copydata/7359/" title="Details">
+                        6147
+                    </a>
+                
+                
+            </td>
+            <td>
+                <a class="copy_data copy_data_6147" href="index.html" data-form="/copydata/7359/" title="Details">
+                    University of Illinois, Urbana-Champaign
+                </a>
+            </td>
+            <td>
+                
+                    <a class="copy_data" href="index.html" data-form="/copydata/7359/" title="Details">
+                        IUQ00005
+                    </a>
+                
+            </td>
+            <td>
+                
+                      <span title="This existence of this copy at the location has been verified." class="verified-symbol">✓</span>
+                
+            </td>
+            <td>
+                
+            </td>
+            <td>
+                
+            </td>
+        </tr>
+        
+        <tr>
+            <td>
+                
+                    <a class="copy_data" href="index.html" data-form="/copydata/7360/" title="Details">
+                        6148
+                    </a>
+                
+                
+            </td>
+            <td>
+                <a class="copy_data copy_data_6148" href="index.html" data-form="/copydata/7360/" title="Details">
+                    University of Illinois, Urbana-Champaign
+                </a>
+            </td>
+            <td>
+                
+                    <a class="copy_data" href="index.html" data-form="/copydata/7360/" title="Details">
+                        IUQ00006
+                    </a>
+                
+            </td>
+            <td>
+                
+                      <span title="This existence of this copy at the location has been verified." class="verified-symbol">✓</span>
+                
+            </td>
+            <td>
+                
+            </td>
+            <td>
+                
+            </td>
+        </tr>
+        
+        <tr>
+            <td>
+                
+                    <a class="copy_data" href="index.html" data-form="/copydata/6977/" title="Details">
+                        6149
+                    </a>
+                
+                
+            </td>
+            <td>
+                <a class="copy_data copy_data_6149" href="index.html" data-form="/copydata/6977/" title="Details">
+                    University of Liverpool
+                </a>
+            </td>
+            <td>
+                
+                    <a class="copy_data" href="index.html" data-form="/copydata/6977/" title="Details">
+                        Morton 334
+                    </a>
+                
+            </td>
+            <td>
+                
+                      <span title="This existence of this copy at the location has been verified." class="verified-symbol">✓</span>
+                
+            </td>
+            <td>
+                
+            </td>
+            <td>
+                
+            </td>
+        </tr>
+        
+        <tr>
+            <td>
+                
+                    <a class="copy_data" href="index.html" data-form="/copydata/7375/" title="Details">
+                        6348
+                    </a>
+                
+                
+            </td>
+            <td>
+                <a class="copy_data copy_data_6348" href="index.html" data-form="/copydata/7375/" title="Details">
+                    University of Maryland
+                </a>
+            </td>
+            <td>
+                
+                    <a class="copy_data" href="index.html" data-form="/copydata/7375/" title="Details">
+                        Rare Folio PR2751 .A2 1632
+                    </a>
+                
+            </td>
+            <td>
+                
+                      <span title="The existence of this copy has not been verified; location entered by an administrator." class="unverified-symbol">⃠</span>
+                
+            </td>
+            <td>
+                
+            </td>
+            <td>
+                
+            </td>
+        </tr>
+        
+        <tr>
+            <td>
+                
+                    <a class="copy_data" href="index.html" data-form="/copydata/7365/" title="Details">
+                        6150
+                    </a>
+                
+                
+            </td>
+            <td>
+                <a class="copy_data copy_data_6150" href="index.html" data-form="/copydata/7365/" title="Details">
+                    University of South Carolina
+                </a>
+            </td>
+            <td>
+                
+                    <a class="copy_data" href="index.html" data-form="/copydata/7365/" title="Details">
+                        PR 2751 .A2
+                    </a>
+                
+            </td>
+            <td>
+                
+                      <span title="The existence of this copy has not been verified; location entered by an administrator." class="unverified-symbol">⃠</span>
+                
+            </td>
+            <td>
+                
+            </td>
+            <td>
+                
+            </td>
+        </tr>
+        
+        <tr>
+            <td>
+                
+                    <a class="copy_data" href="index.html" data-form="/copydata/6975/" title="Details">
+                        6151
+                    </a>
+                
+                
+            </td>
+            <td>
+                <a class="copy_data copy_data_6151" href="index.html" data-form="/copydata/6975/" title="Details">
+                    University of Sydney
+                </a>
+            </td>
+            <td>
+                
+                    <a class="copy_data" href="index.html" data-form="/copydata/6975/" title="Details">
+                        STC 22274a
+                    </a>
+                
+            </td>
+            <td>
+                
+                      <span title="The existence of this copy has not been verified; location entered by an administrator." class="unverified-symbol">⃠</span>
+                
+            </td>
+            <td>
+                
+            </td>
+            <td>
+                
+            </td>
+        </tr>
+        
+        <tr>
+            <td>
+                
+                    <a class="copy_data" href="index.html" data-form="/copydata/7271/" title="Details">
+                        6152
+                    </a>
+                
+                
+            </td>
+            <td>
+                <a class="copy_data copy_data_6152" href="index.html" data-form="/copydata/7271/" title="Details">
+                    University of Tennessee
+                </a>
+            </td>
+            <td>
+                
+                    <a class="copy_data" href="index.html" data-form="/copydata/7271/" title="Details">
+                        PR2751 .A2
+                    </a>
+                
+            </td>
+            <td>
+                
+                      <span title="The existence of this copy has not been verified; location derived from ESTC." class="unverified-symbol">⃠</span>
+                
+            </td>
+            <td>
+                
+            </td>
+            <td>
+                
+            </td>
+        </tr>
+        
+        <tr>
+            <td>
+                
+                    <a class="copy_data" href="index.html" data-form="/copydata/7266/" title="Details">
+                        6153
+                    </a>
+                
+                
+            </td>
+            <td>
+                <a class="copy_data copy_data_6153" href="index.html" data-form="/copydata/7266/" title="Details">
+                    University of Texas at Austin, Harry Ransom Center
+                </a>
+            </td>
+            <td>
+                
+                    <a class="copy_data" href="index.html" data-form="/copydata/7266/" title="Details">
+                        -Q- PR 2751 A2 1632b
+                    </a>
+                
+            </td>
+            <td>
+                
+                      <span title="This existence of this copy at the location has been verified." class="verified-symbol">✓</span>
+                
+            </td>
+            <td>
+                
+            </td>
+            <td>
+                
+            </td>
+        </tr>
+        
+        <tr>
+            <td>
+                
+                    <a class="copy_data" href="index.html" data-form="/copydata/7305/" title="Details">
+                        6154
+                    </a>
+                
+                
+            </td>
+            <td>
+                <a class="copy_data copy_data_6154" href="index.html" data-form="/copydata/7305/" title="Details">
+                    University of Texas at Austin, Harry Ransom Center
+                </a>
+            </td>
+            <td>
+                
+                    <a class="copy_data" href="index.html" data-form="/copydata/7305/" title="Details">
+                        Wg Sh15 +C632c WRE
+                    </a>
+                
+            </td>
+            <td>
+                
+                      <span title="This existence of this copy at the location has been verified." class="verified-symbol">✓</span>
+                
+            </td>
+            <td>
+                
+            </td>
+            <td>
+                
+            </td>
+        </tr>
+        
+        <tr>
+            <td>
+                
+                    <a class="copy_data" href="index.html" data-form="/copydata/7619/" title="Details">
+                        6155
+                    </a>
+                
+                
+            </td>
+            <td>
+                <a class="copy_data copy_data_6155" href="index.html" data-form="/copydata/7619/" title="Details">
+                    University of Toronto
+                </a>
+            </td>
+            <td>
+                
+                    <a class="copy_data" href="index.html" data-form="/copydata/7619/" title="Details">
+                        fisher .S52 A1 1632 f
+                    </a>
+                
+            </td>
+            <td>
+                
+                      <span title="The existence of this copy has not been verified; location entered by an administrator." class="unverified-symbol">⃠</span>
+                
+            </td>
+            <td>
+                
+            </td>
+            <td>
+                
+            </td>
+        </tr>
+        
+        <tr>
+            <td>
+                
+                    <a class="copy_data" href="index.html" data-form="/copydata/6967/" title="Details">
+                        6156
+                    </a>
+                
+                
+            </td>
+            <td>
+                <a class="copy_data copy_data_6156" href="index.html" data-form="/copydata/6967/" title="Details">
+                    University of Virginia
+                </a>
+            </td>
+            <td>
+                
+                    <a class="copy_data" href="index.html" data-form="/copydata/6967/" title="Details">
+                        E 1632 .S43
+                    </a>
+                
+            </td>
+            <td>
+                
+                      <span title="The existence of this copy has not been verified; location derived from ESTC." class="unverified-symbol">⃠</span>
+                
+            </td>
+            <td>
+                
+            </td>
+            <td>
+                
+            </td>
+        </tr>
+        
+        <tr>
+            <td>
+                
+                    <a class="copy_data" href="index.html" data-form="/copydata/6969/" title="Details">
+                        6157
+                    </a>
+                
+                
+            </td>
+            <td>
+                <a class="copy_data copy_data_6157" href="index.html" data-form="/copydata/6969/" title="Details">
+                    Vassar College
+                </a>
+            </td>
+            <td>
+                
+                    <a class="copy_data" href="index.html" data-form="/copydata/6969/" title="Details">
+                        Grille Folio PR2751 .A2 1632
+                    </a>
+                
+            </td>
+            <td>
+                
+                      <span title="This existence of this copy at the location has been verified." class="verified-symbol">✓</span>
+                
+            </td>
+            <td>
+                
+            </td>
+            <td>
+                
+            </td>
+        </tr>
+        
+        <tr>
+            <td>
+                
+                    <a class="copy_data" href="index.html" data-form="/copydata/7345/" title="Details">
+                        6158
+                    </a>
+                
+                
+            </td>
+            <td>
+                <a class="copy_data copy_data_6158" href="index.html" data-form="/copydata/7345/" title="Details">
+                    Wesleyan University
+                </a>
+            </td>
+            <td>
+                
+                    <a class="copy_data" href="index.html" data-form="/copydata/7345/" title="Details">
+                        Dav. E6
+                    </a>
+                
+            </td>
+            <td>
+                
+                      <span title="This existence of this copy at the location has been verified." class="verified-symbol">✓</span>
+                
+            </td>
+            <td>
+                
+            </td>
+            <td>
+                
+            </td>
+        </tr>
+        
+        <tr>
+            <td>
+                
+                    <a class="copy_data" href="index.html" data-form="/copydata/7324/" title="Details">
+                        6159
+                    </a>
+                
+                
+            </td>
+            <td>
+                <a class="copy_data copy_data_6159" href="index.html" data-form="/copydata/7324/" title="Details">
+                    Württembergische Landesbibliothek, Stuttgart (State Library of Württemberg)
+                </a>
+            </td>
+            <td>
+                
+                    <a class="copy_data" href="index.html" data-form="/copydata/7324/" title="Details">
+                        HBFa 449
+                    </a>
+                
+            </td>
+            <td>
+                
+                      <span title="This existence of this copy at the location has been verified." class="verified-symbol">✓</span>
+                
+            </td>
+            <td>
+                
+            </td>
+            <td>
+                
+            </td>
+        </tr>
+        
+        <tr>
+            <td>
+                
+                    <a class="copy_data" href="index.html" data-form="/copydata/7241/" title="Details">
+                        6160
+                    </a>
+                
+                
+            </td>
+            <td>
+                <a class="copy_data copy_data_6160" href="index.html" data-form="/copydata/7241/" title="Details">
+                    Yale University, Beinecke Library
+                </a>
+            </td>
+            <td>
+                
+                    <a class="copy_data" href="index.html" data-form="/copydata/7241/" title="Details">
+                        1997 +17
+                    </a>
+                
+            </td>
+            <td>
+                
+                      <span title="This existence of this copy at the location has been verified." class="verified-symbol">✓</span>
+                
+            </td>
+            <td>
+                
+            </td>
+            <td>
+                
+            </td>
+        </tr>
+        
+        <tr>
+            <td>
+                
+                    <a class="copy_data" href="index.html" data-form="/copydata/7337/" title="Details">
+                        6161
+                    </a>
+                
+                
+            </td>
+            <td>
+                <a class="copy_data copy_data_6161" href="index.html" data-form="/copydata/7337/" title="Details">
+                    Yale University, Beinecke Library
+                </a>
+            </td>
+            <td>
+                
+                    <a class="copy_data" href="index.html" data-form="/copydata/7337/" title="Details">
+                        Ig 12 +632 copy 1
+                    </a>
+                
+            </td>
+            <td>
+                
+                      <span title="This existence of this copy at the location has been verified." class="verified-symbol">✓</span>
+                
+            </td>
+            <td>
+                
+            </td>
+            <td>
+                
+            </td>
+        </tr>
+        
+        <tr>
+            <td>
+                
+                    <a class="copy_data" href="index.html" data-form="/copydata/7339/" title="Details">
+                        6162
+                    </a>
+                
+                
+            </td>
+            <td>
+                <a class="copy_data copy_data_6162" href="index.html" data-form="/copydata/7339/" title="Details">
+                    Yale University, Beinecke Library
+                </a>
+            </td>
+            <td>
+                
+                    <a class="copy_data" href="index.html" data-form="/copydata/7339/" title="Details">
+                        Ig 12 +632 copy 3
+                    </a>
+                
+            </td>
+            <td>
+                
+                      <span title="This existence of this copy at the location has been verified." class="verified-symbol">✓</span>
+                
+            </td>
+            <td>
+                
+            </td>
+            <td>
+                
+            </td>
+        </tr>
+        
+        <tr>
+            <td>
+                
+                    <a class="copy_data" href="index.html" data-form="/copydata/7340/" title="Details">
+                        6163
+                    </a>
+                
+                
+            </td>
+            <td>
+                <a class="copy_data copy_data_6163" href="index.html" data-form="/copydata/7340/" title="Details">
+                    Yale University, Beinecke Library
+                </a>
+            </td>
+            <td>
+                
+                    <a class="copy_data" href="index.html" data-form="/copydata/7340/" title="Details">
+                        Ig 12 +632 copy 4
+                    </a>
+                
+            </td>
+            <td>
+                
+                      <span title="This existence of this copy at the location has been verified." class="verified-symbol">✓</span>
+                
+            </td>
+            <td>
+                
+            </td>
+            <td>
+                
+            </td>
+        </tr>
+        
+        <tr>
+            <td>
+                
+                    <a class="copy_data" href="index.html" data-form="/copydata/7347/" title="Details">
+                        6164
+                    </a>
+                
+                
+            </td>
+            <td>
+                <a class="copy_data copy_data_6164" href="index.html" data-form="/copydata/7347/" title="Details">
+                    Yale University, Elizabethan Club
+                </a>
+            </td>
+            <td>
+                
+                    <a class="copy_data" href="index.html" data-form="/copydata/7347/" title="Details">
+                        Eliz 29 copy 1
+                    </a>
+                
+            </td>
+            <td>
+                
+                      <span title="This existence of this copy at the location has been verified." class="verified-symbol">✓</span>
+                
+            </td>
+            <td>
+                
+            </td>
+            <td>
+                
+            </td>
+        </tr>
+        
+        
+    </tbody></table>
+</div>
+
+
+
+                <div class="footer">
+                    
+<table class="footer-nav">
+   <tbody><tr>
+     <th>
+       <span><a href="../../about/advisoryboard/index.html">advisory board</a></span>
+       <span><a href="../../about/references/index.html">references</a></span>
+       <span><a href="../../contact/index.html">contact</a></span>
+     </th>
+   </tr>
+</tbody></table>
+
+                </div>
+            </div>
+        </div>
+    
+
+
+</body></html>
