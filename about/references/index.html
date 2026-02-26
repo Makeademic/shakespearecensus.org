@@ -1,0 +1,262 @@
+<html><head>
+        
+
+<meta charset="utf-8">
+
+<link rel="shortcut icon" type="image/ico" href="../../static/census/images/favicon.3c532e7612ef.png">
+
+<!-- Remote CSS -->
+
+<link href="../../css/index.html" rel="stylesheet">
+<link href="../../css/index.html" rel="stylesheet">
+<link rel="stylesheet prefetch" href="../../ajax/libs/semantic-ui/2.1.8/components/icon.min.css">
+<link rel="stylesheet" href="../../releases/v5.0.8/css/solid.css" integrity="sha384-v2Tw72dyUXeU3y4aM2Y0tBJQkGfplr39mxZqlTBDUZAb9BGoC40+rdFCG0m10lXk" crossorigin="anonymous">
+<link rel="stylesheet" href="../../releases/v5.0.8/css/fontawesome.css" integrity="sha384-q3jl8XQu1OpdLgGFvNRnPdj5VIlCvgsDQTQB6owSOHWlAurxul7f+JpUOVdAiJ5P" crossorigin="anonymous">
+
+<!-- Remote JS -->
+
+<!-- <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.12.4/jquery.min.js"></script> -->
+<!-- <script src="https://code.jquery.com/jquery-1.10.2.js"></script> -->
+<!-- <script src="https://code.jquery.com/ui/1.11.4/jquery-ui.js"></script> -->
+<script src="../../ajax/libs/jquery/3.2.1/jquery.min.js"></script>
+<link rel="stylesheet" href="../../ajax/libs/jqueryui/1.12.1/themes/smoothness/jquery-ui.css">
+<script src="../../ajax/libs/jqueryui/1.12.1/jquery-ui.min.js"></script>
+
+<!-- Local CSS -->
+
+<link rel="stylesheet" type="text/css" href="../../static/census/style.f625957d67b9.css">
+
+<!-- Local JS -->
+
+<script src="../../static/census/js/utils.cdf1ea897b68.js"></script>
+
+<title>Shakespeare Census</title>
+
+<!-- Matomo -->
+<script type="text/javascript">
+  var _paq = window._paq || [];
+  /* tracker methods like "setCustomDimension" should be called before "trackPageView" */
+  _paq.push(['trackPageView']);
+  _paq.push(['enableLinkTracking']);
+  (function() {
+    var u="//upenndigitalscholarship.org/piwik/";
+    _paq.push(['setTrackerUrl', u+'matomo.php']);
+    _paq.push(['setSiteId', '61']);
+    var d=document, g=d.createElement('script'), s=d.getElementsByTagName('script')[0];
+    g.type='text/javascript'; g.async=true; g.defer=true; g.src=u+'matomo.js'; s.parentNode.insertBefore(g,s);
+  })();
+</script>
+<!-- End Matomo Code -->
+
+
+    </head>
+    <body>
+        <div class="frame-container">
+            <div class="outer-frame">
+                <header>
+                    
+
+<div class="tucked">
+    
+
+    <a class="button" href="../../login/index.html">Sign in</a>
+    
+    <!-- A normally-styled non-breaking space always appears here
+        to ensure consistent div height. Someday we will find the
+        correct way to do this. -->
+        &nbsp;
+</div>
+<table class="title">
+    <tbody><tr>
+        <th>
+            &nbsp;
+        </th>
+        <th>
+            &nbsp;
+        </th>
+        <th>
+            &nbsp;
+        </th>
+        <th>
+            &nbsp;
+        </th>
+   </tr>
+    <tr>
+        <td colspan="4">
+          
+            <a href="../../homepage/index.html">Shakespeare Census</a><br>
+          
+        </td>
+    </tr>
+</tbody></table>
+
+<table class="header-title-nav">
+   <tbody><tr>
+     <th>
+       <a href="../index.html">about</a>
+     </th>
+     <th>
+       <a href="#search/index.html" id="site-search-button">search</a>
+     </th>
+   </tr>
+</tbody></table>
+
+<div class="search-bar">
+  <form id="search-bar-form" class="hidden" action="../../search/index.html" method="get">
+    <select id="search-bar-form-field" name="field">
+      <option disabled="" selected="" value="">Search by...</option>
+      <option value="keyword">Keyword</option>
+      <option value="location">Location</option>
+      <option value="provenance_name">Provenance Name</option>
+      <option value="collection">Specific Features</option>
+      <option value="year">Year</option>
+      <option value="stc">STC / Wing #</option>
+      <option value="bartlett">Bartlett #</option>
+      <option value="nsc">SC #</option>
+    </select>
+    <input id="search-bar-form-text" type="text" name="value" placeholder="Search..">
+    <input id="search-bar-form-submit" type="submit" value="Submit">
+  </form>
+</div>
+
+<script>
+    utils.get.id('site-search-button').addEventListener('click', function () {
+        utils.togglehide.id('search-bar-form');
+    });
+    $(function() {
+        var autofillMap = {
+            location: 'https://shakespearecensus.org/autofill/location/',
+            provenance_name: 'https://shakespearecensus.org/autofill/provenance/',
+            collection: 'https://shakespearecensus.org/autofill/collection/'
+        };
+
+        var autofillResponse = function(field, query, response) {
+            fetch(autofillMap[field] + query)
+                .then((matches) => {
+                    return matches.json()
+                })
+                .then((matches_json) => {
+                    return response(matches_json.matches);
+                });
+        };
+
+        $('#search-bar-form-text').autocomplete({
+            minLength: 3,
+            source: function(request, response) {
+                var field_el = utils.get.id('search-bar-form-field');
+                var field = field_el.options[field_el.selectedIndex].value;
+                if (autofillMap.hasOwnProperty(field)) {
+                    autofillResponse(field, request.term, response);
+                }
+            },
+
+            // This is a simple way to automatically submit the form when
+            // a value is selected. But it behaves counterintuitively in 
+            // a couple of cases. I haven't been able to work out why.
+            // So for now you have to hit tab and then enter.
+            select: function(evt, ui) {
+                $('#search-bar-form-text').val(ui.item.value);
+                $('#search-bar-form').submit();
+            },
+
+            // focus: function(evt, ui) {
+            // }
+        });
+        
+        $('#search-bar-form-field').change(function(evt) {
+            if ($('#search-bar-form-field option:selected').val() === 'collection') {
+                $('#search-bar-form-text').autocomplete('search', '   ');
+            }
+        });
+    });
+
+
+    // if (window.location.hash && window.location.hash === '#search') {
+    //    utils.get.id('search-bar-form').classList.remove('hidden');
+    // }
+</script>
+
+                </header>
+
+                
+  
+    <p class="static-text">
+      The following references appear in the Shakespeare Census. We also list the initials of scholars who have examined a particular copy and provided information about it or transcribed marginalia, where that information is not obvious. In addition, the catalogues of the holding institutions in the Shakespeare Census have been invaluable references throughout. <br><br>
+
+<b>AGH</b> // Adam G. Hooks<br><br>
+
+<b>AK</b> // Andrew Keener<br><br>
+
+<b>AP</b> // Aaron Pratt<br><br>
+
+<b>Bartlett 1916</b> // Henrietta C. Bartlett and Alfred W. Pollard, <i>A census of Shakespeare's plays in quarto, 1594-1709</i> (New Haven: Yale UP, 1916).<br><br>
+
+<b>Bartlett 1939</b> //  Henrietta C. Bartlett and Alfred W. Pollard, <i>A census of Shakespeare's plays in quarto, 1594-1709</i>, rev. Bartlett (New Haven: Yale UP, 1939). <br><br>
+
+<b>BH</b> // Ben Higgins<br><br>
+
+<b>CMLB</b> // Claire M.L. Bourne<br><br>
+
+<b>DEEP</b> // Alan B. Farmer and Zachary Lesser, <a href="http://deep.sas.upenn.edu/" target="_blank"><i>DEEP: Database of Early English Playbooks</i></a>.<br><br>
+
+<b>Erne &amp; Singh</b> // Lukas Erne and Devani Singh, <i>Shakespeare in Geneva: Early Modern English Books (1475-1700) at the Martin Bodmer Foundation</i> (Geneva: Editions Ithaque, 2018).<br><br>
+
+<b>ESTC</b> // <a href="http://estc.bl.uk/" target="_blank">English Short Title Catalogue</a>.<br><br>
+
+<b>Greg</b> // W.W. Greg, <i>A Bibliography of the English Printed Drama to the Restoration</i>, 4 vols. (London: Bibliographical Society, 1939-59)<br><br>
+
+<b>JH</b> // Joseph Hone<br><br>
+
+<b>LE</b> // Lukas Erne<br><br>
+
+<b>Lee</b> // Sidney Lee, censuses of <i>Passionate Pilgrim</i>, <i>Pericles</i>, <i>Rape of Lucrece</i>, <i>Sonnets</i>, and <i>Venus and Adonis</i>, in the introductions to facsimile editions, all published Oxford: Clarendon Press, 1905.<br><br>
+
+<b>Morgan</b> // Paul Morgan, "Frances Wolfreston and ‘Hor Bouks’: A Seventeenth-Century Woman Book-Collector," <i>The Library</i> 6th ser. 11 (1989): 197–219.<br><br>
+
+<b>PWMB</b> // Peter W.M. Blayney<br><br>
+
+<b>Rasmussen &amp; West</b> // Eric Rasmussen and Anthony James West, <i>The Shakespeare First Folios: A Descriptive Catalogue</i> (Basingstoke: Palgrave Macmillan, 2012).<br><br>
+
+<b>RC</b> // Rob Carson<br><br>
+
+<b>RS</b> // Robert Stagg<br><br>
+
+
+
+<b>Russ</b> // Anthony William Russ, "Shakespearean Constituencies: Editions of Shakespeare Published Before 1709," PhD diss., University of London, 2020.<br><br>
+
+<b>SL</b> // Sarah Lindenbaum<br><br>
+
+<b>STC</b> // <i>A Short-Title Catalogue of Books Printed in England, Scotland, &amp; Ireland and of English Books Printed Abroad, 1475-1640</i>, 2nd edition, ed. A.W. Pollard, G. R. Redgrave, W. A. Jackson, F. S. Ferguson, and Katharine F. Pantzer, 3 vols. (London: Bibliographical Society, 1976-91)<br><br>
+
+<b>SW</b> // Sarah Werner<br><br>
+
+<b>West</b> // Anthony West, <i>The Shakespeare First Folio: The History of the Book, Volume II: A New World-Wide Census of First Folios</i>, (Oxford: Oxford UP, 2003).<br><br>
+
+<b>Wing</b> // Donald Wing, ed., <i>Short-Title Catalogue of Books Printed in England, Scotland, Ireland, Wales, and British America, and of English Books Printed in Other Countries, 1641-1700</i>, 2nd edition, 4 vols. (New York: MLA, 1972-98).<br><br>
+
+
+<b>ZL</b> // Zachary Lesser<br><br>
+    </p>
+  
+
+
+                <div class="footer">
+                    
+<table class="footer-nav">
+   <tbody><tr>
+     <th>
+       <span><a href="../advisoryboard/index.html">advisory board</a></span>
+       <span><a href="index.html">references</a></span>
+       <span><a href="../../contact/index.html">contact</a></span>
+     </th>
+   </tr>
+</tbody></table>
+
+                </div>
+            </div>
+        </div>
+    
+
+
+</body></html>
